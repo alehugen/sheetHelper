@@ -1,0 +1,107 @@
+{
+  "_meta": {
+    "label": "Português (Brasil)"
+  },
+  "nav": {
+    "upload": "Enviar",
+    "review": "Revisar",
+    "history": "Recentes"
+  },
+  "theme": {
+    "toLight": "Usar tema claro",
+    "toDark": "Usar tema escuro"
+  },
+  "settings": {
+    "language": "Idioma",
+    "currency": "Moeda",
+    "rateNote": "1 BRL = {rate} {code}",
+    "rateUnavailable": "Cotação indisponível — exibindo em reais"
+  },
+  "common": {
+    "close": "Fechar",
+    "retry": "Tentar de novo",
+    "remove": "Remover",
+    "view": "Ver comprovante"
+  },
+  "footer": "Processamento 100% local — nenhum comprovante sai do seu navegador.",
+  "fields": {
+    "type": "Tipo",
+    "date": "Data",
+    "time": "Hora",
+    "amount": "Valor",
+    "payerName": "Pagador",
+    "payerDocument": "CPF/CNPJ do pagador",
+    "payerBank": "Banco do pagador",
+    "payeeName": "Recebedor",
+    "payeeDocument": "CPF/CNPJ do recebedor",
+    "payeeBank": "Banco do recebedor",
+    "transactionId": "Identificador",
+    "dueDate": "Vencimento",
+    "description": "Descrição",
+    "sourceFile": "Arquivo de origem"
+  },
+  "receiptType": {
+    "pix": "Pix",
+    "ted": "TED",
+    "boleto": "Boleto",
+    "unknown": "Não identificado"
+  },
+  "warnings": {
+    "barcode-mismatch": "O código de barras lido não confere com o valor do comprovante. Provável erro de leitura.",
+    "barcode-unverified": "Não foi possível validar o código de barras lido. Confira o identificador.",
+    "low-confidence": "Poucos campos foram reconhecidos. Confira tudo antes de exportar.",
+    "missing-required": "Campos obrigatórios estão vazios."
+  },
+  "upload": {
+    "badge": "100% no seu navegador",
+    "title": "Comprovantes viram planilha.",
+    "description": "Solte os comprovantes de Pix, TED ou boleto abaixo. Os campos são extraídos na sua máquina, você revisa o que foi lido e exporta a planilha. Nenhum arquivo é enviado para lugar nenhum.",
+    "dropTitle": "Arraste os comprovantes aqui",
+    "dropDescription": "ou clique para escolher — PDF, PNG, JPG ou WEBP",
+    "rejectedTitle": "Alguns arquivos foram ignorados",
+    "step1Title": "Envie os comprovantes",
+    "step1Text": "PDF do banco ou foto/print. Aceita vários de uma vez.",
+    "step2Title": "A gente lê os campos",
+    "step2Text": "Pix, TED e boleto são reconhecidos automaticamente.",
+    "step3Title": "Baixe a planilha",
+    "step3Text": "Revise o que foi lido e exporte em .xlsx ou .csv."
+  },
+  "review": {
+    "title": "Revisar e exportar",
+    "description": "Confira os campos lidos e corrija o que precisar antes de gerar a planilha.",
+    "restart": "Recomeçar",
+    "statRead": "Comprovantes lidos",
+    "statTotal": "Valor total",
+    "statAttention": "Precisam de atenção",
+    "processingTitle": "Lendo os arquivos",
+    "processingProgress": "{percent}% concluído",
+    "queueTitle": "Na fila e com problema",
+    "queueCount": "{count} arquivo(s)",
+    "tableTitle": "Campos extraídos",
+    "tableHint": "Células destacadas estão vazias. Clique em qualquer campo para editar, ou no olho para ver o comprovante original.",
+    "incomplete": "{count} incompleto(s)",
+    "emptyTitle": "Nenhum comprovante ainda",
+    "emptyDescription": "Envie arquivos para começar.",
+    "waitingTitle": "Processando",
+    "waitingDescription": "Assim que a leitura terminar os campos aparecem aqui.",
+    "addMoreTitle": "Adicionar mais comprovantes",
+    "addMoreDescription": "Arraste ou clique — eles entram na mesma planilha",
+    "reading": "Leitura",
+    "download": "Baixar planilha"
+  },
+  "history": {
+    "title": "Planilhas recentes",
+    "description": "As 3 últimas exportações ficam salvas neste navegador e podem ser baixadas de novo em qualquer formato.",
+    "clear": "Limpar histórico",
+    "emptyTitle": "Nenhuma planilha exportada ainda",
+    "emptyDescription": "Assim que você exportar, ela aparece aqui.",
+    "emptyCta": "Enviar comprovantes",
+    "summary": "{count} comprovante(s)"
+  },
+  "preview": {
+    "title": "Comprovante original",
+    "extracted": "Texto extraído",
+    "unsupported": "Pré-visualização não disponível para este formato.",
+    "empty": "Nenhum texto foi extraído deste arquivo."
+  }
+}

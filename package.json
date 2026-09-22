@@ -1,0 +1,33 @@
+{
+  "name": "ticketexport",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "format": "prettier --write \"src/**/*.{js,vue,css}\""
+  },
+  "dependencies": {
+    "@vueuse/core": "^15.0.0",
+    "boletos-desc-br": "^3.0.0",
+    "cpf-cnpj-validator": "^2.1.2",
+    "pdfjs-dist": "^6.3.289",
+    "pinia": "^4.0.3",
+    "tesseract.js": "^7.0.0",
+    "vue": "^3.5.42",
+    "vue-currency-input": "^3.2.2",
+    "vue-i18n": "^11.4.12",
+    "vue-router": "^5.3.1",
+    "write-excel-file": "^4.1.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "prettier": "^3.9.8",
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.3.0"
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "_meta": {
+    "label": "English"
+  },
+  "nav": {
+    "upload": "Upload",
+    "review": "Review",
+    "history": "Recent"
+  },
+  "theme": {
+    "toLight": "Switch to light theme",
+    "toDark": "Switch to dark theme"
+  },
+  "settings": {
+    "language": "Language",
+    "currency": "Currency",
+    "rateNote": "1 BRL = {rate} {code}",
+    "rateUnavailable": "Exchange rate unavailable — showing amounts in BRL"
+  },
+  "common": {
+    "close": "Close",
+    "retry": "Try again",
+    "remove": "Remove",
+    "view": "View receipt"
+  },
+  "footer": "Fully local processing — no receipt ever leaves your browser.",
+  "fields": {
+    "type": "Type",
+    "date": "Date",
+    "time": "Time",
+    "amount": "Amount",
+    "payerName": "Payer",
+    "payerDocument": "Payer tax ID",
+    "payerBank": "Payer bank",
+    "payeeName": "Payee",
+    "payeeDocument": "Payee tax ID",
+    "payeeBank": "Payee bank",
+    "transactionId": "Reference",
+    "dueDate": "Due date",
+    "description": "Description",
+    "sourceFile": "Source file"
+  },
+  "receiptType": {
+    "pix": "Pix",
+    "ted": "Wire transfer",
+    "boleto": "Boleto",
+    "unknown": "Unidentified"
+  },
+  "warnings": {
+    "barcode-mismatch": "The barcode does not match the amount on the receipt. Likely a reading error.",
+    "barcode-unverified": "The barcode could not be validated. Double-check the reference.",
+    "low-confidence": "Few fields were recognised. Check everything before exporting.",
+    "missing-required": "Required fields are empty."
+  },
+  "upload": {
+    "badge": "Runs entirely in your browser",
+    "title": "Receipts become a spreadsheet.",
+    "description": "Drop your Pix, wire transfer or boleto receipts below. Fields are extracted on your machine, you review what was read and export the spreadsheet. No file is uploaded anywhere.",
+    "dropTitle": "Drag your receipts here",
+    "dropDescription": "or click to browse — PDF, PNG, JPG or WEBP",
+    "rejectedTitle": "Some files were skipped",
+    "step1Title": "Upload the receipts",
+    "step1Text": "Bank PDF or a photo/screenshot. Several at once.",
+    "step2Title": "We read the fields",
+    "step2Text": "Pix, wire transfers and boletos are detected automatically.",
+    "step3Title": "Download the spreadsheet",
+    "step3Text": "Review what was read and export as .xlsx or .csv."
+  },
+  "review": {
+    "title": "Review and export",
+    "description": "Check the extracted fields and fix anything you need before generating the spreadsheet.",
+    "restart": "Start over",
+    "statRead": "Receipts read",
+    "statTotal": "Total amount",
+    "statAttention": "Need attention",
+    "processingTitle": "Reading the files",
+    "processingProgress": "{percent}% done",
+    "queueTitle": "Queued and failed",
+    "queueCount": "{count} file(s)",
+    "tableTitle": "Extracted fields",
+    "tableHint": "Highlighted cells are empty. Click any field to edit, or the eye to see the original receipt.",
+    "incomplete": "{count} incomplete",
+    "emptyTitle": "No receipts yet",
+    "emptyDescription": "Upload files to get started.",
+    "waitingTitle": "Processing",
+    "waitingDescription": "Fields show up here as soon as reading finishes.",
+    "addMoreTitle": "Add more receipts",
+    "addMoreDescription": "Drag or click — they join the same spreadsheet",
+    "reading": "Reading",
+    "download": "Download spreadsheet"
+  },
+  "history": {
+    "title": "Recent spreadsheets",
+    "description": "The last 3 exports are stored in this browser and can be downloaded again in any format.",
+    "clear": "Clear history",
+    "emptyTitle": "No spreadsheet exported yet",
+    "emptyDescription": "Once you export, it shows up here.",
+    "emptyCta": "Upload receipts",
+    "summary": "{count} receipt(s)"
+  },
+  "preview": {
+    "title": "Original receipt",
+    "extracted": "Extracted text",
+    "unsupported": "Preview is not available for this format.",
+    "empty": "No text was extracted from this file."
+  }
+}

@@ -1,0 +1,102 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-ink-50: #f8f9fa;
+  --color-ink-100: #e9ecef;
+  --color-ink-200: #dee2e6;
+  --color-ink-300: #ced4da;
+  --color-ink-400: #adb5bd;
+  --color-ink-500: #6c757d;
+  --color-ink-600: #495057;
+  --color-ink-700: #343a40;
+  --color-ink-800: #212529;
+
+  --color-title: var(--color-ink-800);
+  --color-body: var(--color-ink-700);
+  --color-muted: var(--color-ink-600);
+  --color-subtle: var(--color-ink-500);
+
+  --color-success: #2f6f4f;
+  --color-success-soft: #e7f0ea;
+  --color-warning: #8a6410;
+  --color-warning-soft: #f8efdc;
+  --color-danger: #9b2c2c;
+  --color-danger-soft: #f6e7e7;
+
+  --font-sans:
+    'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+
+  --radius-card: 0.875rem;
+  --radius-control: 0.625rem;
+
+  --shadow-soft:
+    0 1px 2px 0 rgb(33 37 41 / 0.04), 0 1px 3px 0 rgb(33 37 41 / 0.06);
+  --shadow-raised:
+    0 4px 6px -2px rgb(33 37 41 / 0.05), 0 12px 16px -4px rgb(33 37 41 / 0.08);
+}
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+@layer theme {
+  :root[data-theme='dark'] {
+    --color-ink-50: #212529;
+    --color-ink-100: #1a1d20;
+    --color-ink-200: #343a40;
+    --color-ink-300: #495057;
+    --color-ink-400: #6c757d;
+    --color-ink-500: #adb5bd;
+    --color-ink-600: #ced4da;
+    --color-ink-700: #dee2e6;
+    --color-ink-800: #f8f9fa;
+
+    --color-success: #7fc0a0;
+    --color-success-soft: #1d3329;
+    --color-warning: #dcb36a;
+    --color-warning-soft: #332a14;
+    --color-danger: #e0908e;
+    --color-danger-soft: #331d1d;
+
+    color-scheme: dark;
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-ink-100 text-body font-sans antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-ink-600 rounded-sm outline-2 outline-offset-2;
+  }
+
+  ::selection {
+    @apply bg-ink-300 text-title;
+  }
+}
+
+@utility logo-mark {
+  filter: drop-shadow(0 1px 2px rgb(33 37 41 / 0.28));
+
+  @variant dark {
+    filter: invert(1) hue-rotate(180deg)
+      drop-shadow(0 1px 3px rgb(0 0 0 / 0.55));
+  }
+}
+
+@utility logo-type {
+  text-shadow: 0 1px 1px rgb(33 37 41 / 0.16);
+
+  @variant dark {
+    text-shadow: 0 1px 2px rgb(0 0 0 / 0.5);
+  }
+}
+
+@utility text-numeric {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}
