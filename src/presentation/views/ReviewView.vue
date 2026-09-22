@@ -33,11 +33,11 @@ const { isExporting, pendingFormat, error, exportReceipts } =
 
 const {
   jobs,
-  readyJobs,
   pendingJobs,
   failedJobs,
-  incompleteJobs,
-  warnedJobs,
+  rows,
+  incompleteRows,
+  warnedRows,
   receipts,
   totalAmount,
   overallProgress,
@@ -46,7 +46,7 @@ const {
 
 const previewId = ref(null)
 const previewJob = computed(
-  () => readyJobs.value.find((job) => job.id === previewId.value) ?? null,
+  () => jobs.value.find((job) => job.id === previewId.value) ?? null,
 )
 const isPreviewOpen = computed({
   get: () => previewJob.value !== null,
@@ -58,11 +58,11 @@ const isPreviewOpen = computed({
 const unfinished = computed(() => [...pendingJobs.value, ...failedJobs.value])
 
 const attention = computed(
-  () => new Set([...incompleteJobs.value, ...warnedJobs.value]).size,
+  () => new Set([...incompleteRows.value, ...warnedRows.value]).size,
 )
 
 const stats = computed(() => [
-  { label: t('review.statRead'), value: String(readyJobs.value.length) },
+  { label: t('review.statRead'), value: String(rows.value.length) },
   { label: t('review.statTotal'), value: money(totalAmount.value) },
   { label: t('review.statAttention'), value: String(attention.value) },
 ])
@@ -90,7 +90,7 @@ function startOver() {
         <AppButton
           variant="secondary"
           :loading="isExporting && pendingFormat === SpreadsheetFormat.CSV"
-          :disabled="!readyJobs.length || isExporting"
+          :disabled="!rows.length || isExporting"
           @click="exportReceipts(receipts, SpreadsheetFormat.CSV)"
         >
           <template #icon><AppIcon name="download" /></template>
@@ -98,7 +98,7 @@ function startOver() {
         </AppButton>
         <AppButton
           :loading="isExporting && pendingFormat === SpreadsheetFormat.XLSX"
-          :disabled="!readyJobs.length || isExporting"
+          :disabled="!rows.length || isExporting"
           @click="exportReceipts(receipts, SpreadsheetFormat.XLSX)"
         >
           <template #icon><AppIcon name="sheet" /></template>
@@ -156,18 +156,18 @@ function startOver() {
           <h2 class="text-title text-sm font-semibold">
             {{ t('review.tableTitle') }}
           </h2>
-          <AppBadge v-if="incompleteJobs.length" tone="warning">
-            {{ t('review.incomplete', { count: incompleteJobs.length }) }}
+          <AppBadge v-if="incompleteRows.length" tone="warning">
+            {{ t('review.incomplete', { count: incompleteRows.length }) }}
           </AppBadge>
         </div>
         <p class="text-muted mt-0.5 text-xs">{{ t('review.tableHint') }}</p>
       </template>
 
       <ReceiptTable
-        v-if="readyJobs.length"
-        :jobs="readyJobs"
+        v-if="rows.length"
+        :rows="rows"
         @update="store.updateField"
-        @remove="store.removeJob"
+        @remove="store.removeRow"
         @preview="previewId = $event"
       />
       <AppEmptyState

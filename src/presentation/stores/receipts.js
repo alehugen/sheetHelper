@@ -17,16 +17,30 @@ export const useReceiptsStore = defineStore('receipts', () => {
   )
   const pendingJobs = computed(() => jobs.value.filter(isPending))
 
-  const receipts = computed(() => readyJobs.value.map((job) => job.receipt))
+  const rows = computed(() =>
+    readyJobs.value.flatMap((job) =>
+      job.entries.map((entry, index) => ({
+        key: `${job.id}:${index}`,
+        jobId: job.id,
+        index,
+        fileName: job.fileName,
+        receipt: entry.receipt,
+        confidence: entry.confidence,
+        warnings: entry.warnings,
+      })),
+    ),
+  )
+
+  const receipts = computed(() => rows.value.map((row) => row.receipt))
 
   const hasReceipts = computed(() => jobs.value.length > 0)
 
-  const warnedJobs = computed(() =>
-    readyJobs.value.filter((job) => job.warnings.length),
+  const incompleteRows = computed(() =>
+    rows.value.filter((row) => missingRequiredFields(row.receipt).length),
   )
 
-  const incompleteJobs = computed(() =>
-    readyJobs.value.filter((job) => missingRequiredFields(job.receipt).length),
+  const warnedRows = computed(() =>
+    rows.value.filter((row) => row.warnings.length),
   )
 
   const totalAmount = computed(() =>
@@ -67,14 +81,12 @@ export const useReceiptsStore = defineStore('receipts', () => {
     job.error = null
 
     try {
-      const result = await container.extractReceiptFromFile(job.file, {
+      const result = await container.extractReceiptsFromFile(job.file, {
         onProgress: (ratio) => {
           job.progress = Math.min(1, Math.max(0, ratio))
         },
       })
-      job.receipt = result.receipt
-      job.confidence = result.confidence
-      job.warnings = result.warnings
+      job.entries = result.entries
       job.rawText = result.rawText
       job.status = JobStatus.READY
     } catch (error) {
@@ -106,10 +118,17 @@ export const useReceiptsStore = defineStore('receipts', () => {
     await processQueue()
   }
 
-  function updateField(jobId, key, value) {
+  function updateField(jobId, index, key, value) {
+    const entry = find(jobId)?.entries[index]
+    if (!entry) return
+    entry.receipt = withField(entry.receipt, key, value)
+  }
+
+  function removeRow(jobId, index) {
     const job = find(jobId)
-    if (!job?.receipt) return
-    job.receipt = withField(job.receipt, key, value)
+    if (!job) return
+    job.entries.splice(index, 1)
+    if (!job.entries.length) removeJob(jobId)
   }
 
   function removeJob(jobId) {
@@ -126,16 +145,18 @@ export const useReceiptsStore = defineStore('receipts', () => {
     readyJobs,
     failedJobs,
     pendingJobs,
-    incompleteJobs,
-    warnedJobs,
+    rows,
     receipts,
     hasReceipts,
+    incompleteRows,
+    warnedRows,
     totalAmount,
     overallProgress,
     enqueue,
     processQueue,
     retry,
     updateField,
+    removeRow,
     removeJob,
     reset,
   }

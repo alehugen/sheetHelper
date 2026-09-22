@@ -45,7 +45,7 @@ export function parseDate(input) {
   if (slashed) return toIsoDate(slashed[3], slashed[2], slashed[1])
 
   const written = text.match(
-    /\b(\d{1,2})\s*(?:de\s+)?([a-z]{3,9})\.?\s*(?:de\s+)?(\d{4})\b/,
+    /\b(\d{1,2})\s*(?:de\s+)?([a-z]{3,9})\.?,?\s*(?:de\s+)?(\d{4})\b/,
   )
   if (written && MONTHS[written[2]]) {
     return toIsoDate(written[3], MONTHS[written[2]], written[1])

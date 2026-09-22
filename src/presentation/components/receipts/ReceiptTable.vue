@@ -1,7 +1,6 @@
 <script setup>
 import { useI18n } from 'vue-i18n'
 
-import { missingRequiredFields } from '@/domain/receipt/Receipt'
 import { RECEIPT_FIELDS } from '@/domain/receipt/ReceiptFields'
 import { warningMessage } from '@/domain/receipt/ReceiptWarning'
 
@@ -11,7 +10,7 @@ import AppIcon from '../ui/AppIcon.vue'
 import EditableCell from './EditableCell.vue'
 
 defineProps({
-  jobs: { type: Array, required: true },
+  rows: { type: Array, required: true },
 })
 
 const emit = defineEmits(['update', 'remove', 'preview'])
@@ -52,17 +51,17 @@ function confidenceTone(value) {
 
       <tbody>
         <tr
-          v-for="job in jobs"
-          :key="job.id"
+          v-for="row in rows"
+          :key="row.key"
           class="border-ink-200 hover:bg-ink-100/50 border-b transition-colors"
         >
           <td class="bg-ink-50 sticky left-0 z-10 px-3 py-1.5">
             <div class="flex items-center gap-1.5">
-              <AppBadge :tone="confidenceTone(job.confidence)">
-                {{ Math.round(job.confidence * 100) }}%
+              <AppBadge :tone="confidenceTone(row.confidence)">
+                {{ Math.round(row.confidence * 100) }}%
               </AppBadge>
               <AppBadge
-                v-for="code in job.warnings"
+                v-for="code in row.warnings"
                 :key="code"
                 :tone="code === 'missing-required' ? 'warning' : 'danger'"
                 :title="warningMessage(code, t)"
@@ -76,8 +75,10 @@ function confidenceTone(value) {
             <EditableCell
               :field="field"
               :label="labels[field.key]"
-              :model-value="job.receipt[field.key]"
-              @update:model-value="emit('update', job.id, field.key, $event)"
+              :model-value="row.receipt[field.key]"
+              @update:model-value="
+                emit('update', row.jobId, row.index, field.key, $event)
+              "
             />
           </td>
 
@@ -87,7 +88,7 @@ function confidenceTone(value) {
                 type="button"
                 class="text-subtle hover:text-body rounded p-1 transition-colors"
                 :aria-label="t('common.view')"
-                @click="emit('preview', job.id)"
+                @click="emit('preview', row.jobId)"
               >
                 <AppIcon name="eye" :size="15" />
               </button>
@@ -95,7 +96,7 @@ function confidenceTone(value) {
                 type="button"
                 class="text-subtle hover:text-danger rounded p-1 transition-colors"
                 :aria-label="t('common.remove')"
-                @click="emit('remove', job.id)"
+                @click="emit('remove', row.jobId, row.index)"
               >
                 <AppIcon name="trash" :size="15" />
               </button>

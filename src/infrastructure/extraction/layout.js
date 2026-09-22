@@ -84,6 +84,10 @@ function splitRow(row, threshold) {
     : { label: join(words.slice(0, cut)), value: join(words.slice(cut)) }
 }
 
+function rowLeft(row) {
+  return Math.min(...row.words.map((word) => word.x0))
+}
+
 function isContinuation({ label, value }) {
   if (!label) return false
   if (label.length <= 2) return true
@@ -103,12 +107,17 @@ export function composeLayout(words) {
     (right - left) * MIN_GAP_RATIO,
   )
 
+  const labelLeft = Math.min(...rows.map(rowLeft))
+
   const cells = []
   for (const row of rows) {
     const cell = splitRow(row, threshold)
     const previous = cells.at(-1)
+    const valueOnly = !cell.value && rowLeft(row) - labelLeft > threshold
 
-    if (previous && isContinuation(cell)) {
+    if (previous && valueOnly) {
+      previous.value = [previous.value, cell.label].filter(Boolean).join(' ')
+    } else if (previous && isContinuation(cell)) {
       previous.label +=
         cell.label.length <= FRAGMENT_MAX ? cell.label : ` ${cell.label}`
       previous.value = [previous.value, cell.value].filter(Boolean).join(' ')

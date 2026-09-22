@@ -29,6 +29,8 @@ numa API pública (só quando você troca a moeda). Nenhuma delas carrega dado s
 ## O que ele faz
 
 - Lê **PDF do banco, foto e print** de comprovante de Pix, TED e boleto
+- Lê **extrato de conta corrente**, virando uma linha por lançamento — um PDF
+  com 150 Pix recebidos vira 150 linhas de uma vez
 - Extrai 14 campos: tipo, data, hora, valor, pagador e recebedor (nome, CPF/CNPJ
   e banco), identificador, vencimento e descrição
 - Mostra tudo numa **tabela editável** antes de exportar, com o comprovante
@@ -59,11 +61,14 @@ npm run format     # prettier
 arquivo → extração de texto → parser → revisão do usuário → planilha
 ```
 
-| Entrada | Caminho |
-| --- | --- |
-| PDF com camada de texto | `pdfjs-dist` lê o texto direto — rápido e exato |
-| PDF digitalizado | `pdfjs-dist` rasteriza as páginas → `tesseract.js` faz OCR |
-| Imagem (PNG/JPG/WEBP) | `tesseract.js` faz OCR com reconstrução de layout |
+Um arquivo gera **uma ou mais linhas**: um comprovante vira uma, um extrato vira
+uma por lançamento.
+
+| Entrada                 | Caminho                                                    |
+| ----------------------- | ---------------------------------------------------------- |
+| PDF com camada de texto | `pdfjs-dist` lê o texto direto — rápido e exato            |
+| PDF digitalizado        | `pdfjs-dist` rasteriza as páginas → `tesseract.js` faz OCR |
+| Imagem (PNG/JPG/WEBP)   | `tesseract.js` faz OCR com reconstrução de layout          |
 
 A escolha entre os dois caminhos é automática, por densidade de caracteres por
 página: abaixo de 40, o PDF é tratado como digitalizado.
@@ -96,10 +101,50 @@ Favorecido CENTRO DE EDUCACAO INFANTIL CI
 
 É a mesma correção resolvida por geometria, em vez de um remendo por banco.
 
+### Extrato de conta corrente
+
+Extrato não é comprovante: é uma lista. O
+[parser do extrato do BB](src/domain/receipt/statements/bbStatement.js) lê o
+par de linhas que o banco usa para cada lançamento —
+
+```
+14/08/2026 0000 14397 821 Pix - Recebido 141.005.015.953.521 1.920,00 C
+14/08 10:05 47687426000129 NEXSTILL SO
+```
+
+— e resolve três coisas que o formato impõe:
+
+- **O indicador `C`/`D` decide quem é quem.** Crédito: a contraparte é a
+  pagadora e o titular da conta é o recebedor. Débito: o inverso.
+- **CPF vem preenchido com zeros à esquerda** até 14 dígitos
+  (`00029220719878` → `292.207.198-78`), do mesmo tamanho de um CNPJ.
+- **A quebra de página separa o lançamento do seu detalhe**, com cabeçalho e
+  rodapé do navegador no meio. A busca pelo detalhe pula linhas que não são nem
+  detalhe nem um novo lançamento.
+
+Linhas de saldo são descartadas, e o nome da contraparte é ignorado quando o
+banco repete o CNPJ no lugar dele.
+
+### Um extrator, um vocabulário
+
+Não há um parser por banco. Há **um extrator** dirigido por um vocabulário único
+([`vocabulary.js`](src/domain/receipt/parsing/vocabulary.js)) que mapeia cada
+conceito — pagador, recebedor, valor, vencimento — aos seus sinônimos. O tipo do
+comprovante (Pix, TED, boleto) é **resultado de classificação**, não seletor de
+código: sai do mesmo vocabulário.
+
+Isso significa que ensinar um banco novo é acrescentar sinônimo em um lugar, e o
+sinônimo passa a valer para todos os tipos de comprovante de uma vez.
+
+Seções de partes aceitam duas formas de sinônimo. Os descritivos (`quem pagou`,
+`conta de origem`) casam mesmo com valor na mesma linha. Os curtos e ambíguos
+(`de`, `para`, usados pelo Itaú) só valem quando a linha **é exatamente** aquela
+palavra — sem essa distinção, `de` casaria com meio documento.
+
 ### Motor de rótulos
 
 A extração casa rótulos ancorados no início da linha
-([`support.js`](src/domain/receipt/parsers/support.js)). Três regras que não são
+([`labels.js`](src/domain/receipt/parsing/labels.js)). Três regras que não são
 óbvias até quebrarem:
 
 - **Fronteira de palavra obrigatória.** O rótulo `banco` não pode casar dentro de
@@ -134,7 +179,7 @@ confirma, preenche lacuna ou alerta.
 src/
 ├── domain/            regras de negócio puras (JS, sem Vue, sem libs de UI)
 │   ├── shared/        dinheiro, data, CPF/CNPJ, texto, moeda
-│   └── receipt/       entidade, campos, parsers por tipo de comprovante
+│   └── receipt/       entidade, campos, extrator e parsers de extrato
 ├── application/       casos de uso e portas (contratos)
 │   ├── ports/         interfaces que a infraestrutura implementa
 │   └── use-cases/     extrair comprovante, exportar planilha
@@ -154,12 +199,13 @@ o texto de comprovantes reais.
 
 ## Pontos de extensão
 
-| Quero adicionar | O que fazer | O que mais muda |
-| --- | --- | --- |
-| **Idioma** | Criar `src/i18n/locales/<código>.json` | Nada — `import.meta.glob` registra, e o nome do seletor vem do `_meta.label` do próprio arquivo |
-| **Moeda** | Uma entrada em `CURRENCIES` ([`currency.js`](src/domain/shared/currency.js)) | Nada — a cotação vem na mesma chamada da API e o `Intl` formata |
-| **Banco/formato** | Criar `src/domain/receipt/parsers/<nome>.js` com `{ type, score(text), parse(sections) }` e registrar no array `PARSERS` | Nada |
-| **Coluna na planilha** | Uma entrada em `RECEIPT_FIELDS` + a chave em `fields` nos 3 idiomas | Nada — aparece na tabela, no `.xlsx` e no `.csv` |
+| Quero adicionar                  | O que fazer                                                                                                               | O que mais muda                                                                                 |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Idioma**                       | Criar `src/i18n/locales/<código>.json`                                                                                    | Nada — `import.meta.glob` registra, e o nome do seletor vem do `_meta.label` do próprio arquivo |
+| **Moeda**                        | Uma entrada em `CURRENCIES` ([`currency.js`](src/domain/shared/currency.js))                                              | Nada — a cotação vem na mesma chamada da API e o `Intl` formata                                 |
+| **Banco/formato de comprovante** | Acrescentar os sinônimos dele em `vocabulary.js`                                                                          | Nada — vale para todos os tipos                                                                 |
+| **Formato de extrato**           | Criar `src/domain/receipt/statements/<nome>.js` com `{ id, score(text), parse(lines) }` e registrar no array `STATEMENTS` | Nada                                                                                            |
+| **Coluna na planilha**           | Uma entrada em `RECEIPT_FIELDS` + a chave em `fields` nos 3 idiomas                                                       | Nada — aparece na tabela, no `.xlsx` e no `.csv`                                                |
 
 Detectar um formato novo é pontuação, não `if`: cada parser dá uma nota ao texto
 e o registry usa o vencedor, caindo num parser genérico se ninguém pontuar.
@@ -174,28 +220,28 @@ não comunica estado.
 Texto nunca referencia a escala direto. Os quatro tokens semânticos ficam em
 [`main.css`](src/assets/styles/main.css):
 
-| Token | Tema claro | Contraste sobre a superfície |
-| --- | --- | --- |
-| `text-title` | `ink-800` | 14,6:1 |
-| `text-body` | `ink-700` | 10,9:1 |
-| `text-muted` | `ink-600` | 7,8:1 |
-| `text-subtle` | `ink-500` | 4,5:1 |
+| Token         | Tema claro | Contraste sobre a superfície |
+| ------------- | ---------- | ---------------------------- |
+| `text-title`  | `ink-800`  | 14,6:1                       |
+| `text-body`   | `ink-700`  | 10,9:1                       |
+| `text-muted`  | `ink-600`  | 7,8:1                        |
+| `text-subtle` | `ink-500`  | 4,5:1                        |
 
 No tema escuro a escala `ink` é invertida, então os quatro tokens acompanham sem
 nenhuma variante `dark:` espalhada pelos componentes.
 
 ## Stack
 
-| | |
-| --- | --- |
-| Vue 3 + Vite | `<script setup>`, code splitting por rota |
-| Pinia + Vue Router | estado compartilhado e navegação |
-| Tailwind CSS v4 | tema em CSS via `@theme`, sem `tailwind.config.js` |
-| pdfjs-dist | leitura de PDF e rasterização |
-| tesseract.js | OCR em WebAssembly, em Web Worker |
-| write-excel-file | geração de `.xlsx` |
-| vue-i18n, vue-currency-input | idioma e máscara de moeda |
-| boletos-desc-br, cpf-cnpj-validator | validação de boleto e de documento |
+|                                     |                                                    |
+| ----------------------------------- | -------------------------------------------------- |
+| Vue 3 + Vite                        | `<script setup>`, code splitting por rota          |
+| Pinia + Vue Router                  | estado compartilhado e navegação                   |
+| Tailwind CSS v4                     | tema em CSS via `@theme`, sem `tailwind.config.js` |
+| pdfjs-dist                          | leitura de PDF e rasterização                      |
+| tesseract.js                        | OCR em WebAssembly, em Web Worker                  |
+| write-excel-file                    | geração de `.xlsx`                                 |
+| vue-i18n, vue-currency-input        | idioma e máscara de moeda                          |
+| boletos-desc-br, cpf-cnpj-validator | validação de boleto e de documento                 |
 
 O carregamento inicial é ~46 kB gzip. pdf.js (129 kB), tesseract e o gerador de
 planilha só são baixados quando alguém envia um arquivo ou exporta.
@@ -243,7 +289,8 @@ planilha só são baixados quando alguém envia um arquivo ou exporta.
 - OCR de foto erra dígitos. Identificadores longos (código de barras, ID de
   transação) são os mais afetados — por isso existe a conferência cruzada e a
   tela de revisão.
-- Os parsers foram calibrados em comprovantes de Nubank, Banco do Brasil e Itaú.
+- Os parsers foram calibrados em comprovantes de Nubank, InfinitePay, Banco do
+  Brasil e Itaú, e no extrato de conta corrente do Banco do Brasil.
   Outros layouts caem no parser genérico, que acerta valor, data e hora mas
   costuma deixar as partes envolvidas em branco.
 - A cotação vem de uma API pública sem chave, com cache de 6 horas. Se ela cair,

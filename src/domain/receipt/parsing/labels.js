@@ -8,9 +8,9 @@ import {
 
 export const PATTERNS = {
   document:
-    /[*x\d]{2}\.[*x\d]{3}\.[*x\d]{3}\/[*x\d]{4}-[*x\d]{2}|[*x\d]{3}\.[*x\d]{3}\.[*x\d]{3}-[*x\d]{2}|(?<!\d)\d{14}(?!\d)|(?<!\d)\d{11}(?!\d)/i,
+    /[*x\d]{2}\.[*x\d]{3}\.[*x\d]{3}\/[*x\d]{4}-[*x\d]{2}|[*x\d]{3}\.[*x\d]{3}\.[*x\d]{3}-[*x\d]{2}|[*x]{2,}[*x\d]{6,}|[*x\d]{6,}[*x]{2,}|(?<!\d)\d{14}(?!\d)|(?<!\d)\d{11}(?!\d)/i,
   amount: /R?\$?\s*\d[\d.]*,\d{2}/,
-  date: /\b\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}\b|\b\d{4}-\d{2}-\d{2}\b|\b\d{1,2}\s+(?:de\s+)?[a-zà-ÿ]{3,9}\.?\s+(?:de\s+)?\d{4}\b/i,
+  date: /\b\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}\b|\b\d{4}-\d{2}-\d{2}\b|\b\d{1,2}\s+(?:de\s+)?[a-zà-ÿ]{3,9}\.?,?\s+(?:de\s+)?\d{4}\b/i,
   time: /\b([01]?\d|2[0-3])[:h][0-5]\d(?::[0-5]\d)?\b/,
   endToEndId: /\bE[0-9A-Za-zÀ-ÿ]{25,35}\b/,
   authCode: /\b[0-9A-F]{16,64}\b/i,
@@ -25,11 +25,7 @@ const FOOTER_MARKERS = [
   /^em caso de duvida/,
 ]
 
-const FOOTER_OPENERS = [
-  /^nu pagamentos s\.?\s?a/,
-  /^instituicao de pagamento/,
-  /^id da transacao/,
-]
+const FOOTER_OPENERS = [/^nu pagamentos s\.?\s?a/, /^instituicao de pagamento/]
 
 const FOOTER_LOOKBACK = 6
 
@@ -184,13 +180,23 @@ export function findLabeledDigits(lines, labels, options = {}) {
   return null
 }
 
-export function sliceSection(lines, startLabels, stopLabels = []) {
-  const start = lines.findIndex((line) => labelAt(line, startLabels) !== null)
+export function matchesSection(line, spec) {
+  const folded = fold(line)
+  if (spec.exact?.some((word) => folded === fold(word))) return true
+  return spec.labels?.length ? labelAt(line, spec.labels) !== null : false
+}
+
+export function sectionHeaderValue(line, spec) {
+  return spec.labels?.length ? labelAt(line, spec.labels) : null
+}
+
+export function sliceSection(lines, startSpec, stopSpecs = []) {
+  const start = lines.findIndex((line) => matchesSection(line, startSpec))
   if (start === -1) return []
 
   const rest = lines.slice(start + 1)
-  const relativeStop = rest.findIndex(
-    (line) => labelAt(line, stopLabels) !== null,
+  const relativeStop = rest.findIndex((line) =>
+    stopSpecs.some((spec) => matchesSection(line, spec)),
   )
   const end = relativeStop === -1 ? lines.length : start + 1 + relativeStop
   return lines.slice(start, end)
@@ -202,18 +208,6 @@ export function findFirst(lines, pattern) {
     if (match) return match[0]
   }
   return null
-}
-
-export function findAll(lines, pattern) {
-  const global = new RegExp(
-    pattern.source,
-    `${pattern.flags.replace('g', '')}g`,
-  )
-  const found = []
-  for (const line of lines) {
-    for (const match of line.matchAll(global)) found.push(match[0])
-  }
-  return found
 }
 
 export function guessName(lines) {

@@ -13,9 +13,7 @@ export function createJob(file, id = crypto.randomUUID()) {
     size: file.size,
     status: JobStatus.QUEUED,
     progress: 0,
-    receipt: null,
-    confidence: 0,
-    warnings: [],
+    entries: [],
     rawText: null,
     error: null,
   }

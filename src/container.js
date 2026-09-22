@@ -1,4 +1,4 @@
-import { createExtractReceiptFromFile } from '@/application/use-cases/extractReceiptFromFile'
+import { createExtractReceiptsFromFile } from '@/application/use-cases/extractReceiptsFromFile'
 import {
   createExportSpreadsheet,
   createRebuildSpreadsheet,
@@ -17,7 +17,7 @@ export const container = {
   textExtractor,
   historyStore,
   exchangeRates,
-  extractReceiptFromFile: createExtractReceiptFromFile({ textExtractor }),
+  extractReceiptsFromFile: createExtractReceiptsFromFile({ textExtractor }),
   exportSpreadsheet: createExportSpreadsheet({ writers, historyStore }),
   rebuildSpreadsheet: createRebuildSpreadsheet({ writers }),
 }

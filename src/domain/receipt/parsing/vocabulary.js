@@ -1,0 +1,138 @@
+import { ReceiptType } from '../ReceiptType.js'
+
+export const SECTIONS = {
+  payer: {
+    labels: [
+      'quem pagou',
+      'dados do pagador',
+      'conta de origem',
+      'dados da origem',
+      'conta debitada',
+      'debitado de',
+      'pagador',
+      'remetente',
+      'origem',
+      'cliente',
+      'titular',
+      'sacado',
+    ],
+    exact: ['de', 'from'],
+  },
+  payee: {
+    labels: [
+      'quem recebeu',
+      'dados do recebedor',
+      'conta de destino',
+      'dados do favorecido',
+      'creditado para',
+      'destinatario',
+      'beneficiario',
+      'favorecido',
+      'recebedor',
+      'destino',
+      'cedente',
+    ],
+    exact: ['para', 'to'],
+  },
+}
+
+export const SECTION_BREAKS = [
+  'informacoes adicionais',
+  'codigo de barras',
+  'linha digitavel',
+  'id da transacao',
+  'autenticacao',
+  'autenticacao do comprovante',
+  'controle',
+  'documento',
+]
+
+export const FIELD_LABELS = {
+  name: ['nome completo', 'razao social', 'nome'],
+  document: [
+    'cpf ou cnpj',
+    'cnpj ou cpf',
+    'cpf/cnpj',
+    'cnpj/cpf',
+    'cpf',
+    'cnpj',
+    'documento',
+  ],
+  bank: ['instituicao financeira', 'instituicao', 'emissor', 'banco', 'ispb'],
+  amount: [
+    'valor da transferencia',
+    'valor do documento',
+    'valor do pix',
+    'valor enviado',
+    'valor cobrado',
+    'valor total',
+    'valor pago',
+    'valor',
+  ],
+  date: [
+    'data da transferencia',
+    'data do pagamento',
+    'data de pagamento',
+    'data da transacao',
+    'data e hora',
+    'pago em',
+    'data',
+  ],
+  time: ['horario', 'hora'],
+  dueDate: ['data de vencimento', 'vencimento'],
+  transactionId: [
+    'codigo de autenticacao',
+    'autenticacao do comprovante',
+    'numero do documento',
+    'id da transacao',
+    'identificador',
+    'autenticacao',
+    'nosso numero',
+    'protocolo',
+    'controle',
+  ],
+  barcode: ['codigo de barras', 'linha digitavel'],
+  description: ['descricao', 'mensagem', 'observacao', 'finalidade'],
+}
+
+export const TYPE_KEYWORDS = [
+  [
+    ReceiptType.PIX,
+    [
+      ['pix', 3],
+      ['chave pix', 2],
+      ['quem pagou', 2],
+      ['quem recebeu', 2],
+      ['end to end', 2],
+      ['tipo de transferencia', 1],
+      ['id da transacao', 1],
+    ],
+  ],
+  [
+    ReceiptType.TED,
+    [
+      ['ted', 3],
+      ['doc', 2],
+      ['transferencia eletronica disponivel', 3],
+      ['conta de origem', 2],
+      ['conta de destino', 2],
+      ['codigo de autenticacao', 2],
+      ['favorecido', 1],
+    ],
+  ],
+  [
+    ReceiptType.BOLETO,
+    [
+      ['boleto', 3],
+      ['codigo de barras', 3],
+      ['linha digitavel', 3],
+      ['nosso numero', 2],
+      ['cedente', 2],
+      ['sacado', 2],
+      ['vencimento', 1],
+      ['beneficiario', 1],
+      ['favorecido', 1],
+      ['emissor', 1],
+    ],
+  ],
+]
