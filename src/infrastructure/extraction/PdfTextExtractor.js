@@ -32,10 +32,13 @@ export function createPdfTextExtractor() {
       const pdfjs = await loadPdfjs()
       const data = new Uint8Array(await file.arrayBuffer())
 
+      const loadingTask = pdfjs.getDocument({ data, isEvalSupported: false })
+
       let doc
       try {
-        doc = await pdfjs.getDocument({ data, isEvalSupported: false }).promise
+        doc = await loadingTask.promise
       } catch (error) {
+        await loadingTask.destroy()
         throw new ExtractionError('Não foi possível abrir o PDF.', error)
       }
 
@@ -60,7 +63,7 @@ export function createPdfTextExtractor() {
               : SourceKind.PDF_TEXT,
         }
       } finally {
-        await doc.destroy()
+        await loadingTask.destroy()
       }
     },
   }

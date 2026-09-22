@@ -1,3 +1,5 @@
+import { fold } from '../../domain/shared/text.js'
+
 const ROW_OVERLAP = 0.3
 const MIN_GAP_RATIO = 0.03
 const GAP_FACTOR = 3
@@ -88,16 +90,19 @@ function rowLeft(row) {
   return Math.min(...row.words.map((word) => word.x0))
 }
 
-function isContinuation({ label, value }) {
+function isContinuation({ label, value }, standalone) {
   if (!label) return false
+  if (standalone.has(fold(label))) return false
   if (label.length <= 2) return true
   if (!/\p{Ll}/u.test(label[0])) return false
   if (label.length <= FRAGMENT_MAX) return true
   return value === '' && label.length <= WORD_MAX && !/\d/.test(label)
 }
 
-export function composeLayout(words) {
+export function composeLayout(words, { standaloneHeaders = [] } = {}) {
   if (!words.length) return ''
+
+  const standalone = new Set(standaloneHeaders.map(fold))
 
   const rows = groupRows(words)
   const left = Math.min(...words.map((word) => word.x0))
@@ -117,7 +122,7 @@ export function composeLayout(words) {
 
     if (previous && valueOnly) {
       previous.value = [previous.value, cell.label].filter(Boolean).join(' ')
-    } else if (previous && isContinuation(cell)) {
+    } else if (previous && isContinuation(cell, standalone)) {
       previous.label +=
         cell.label.length <= FRAGMENT_MAX ? cell.label : ` ${cell.label}`
       previous.value = [previous.value, cell.value].filter(Boolean).join(' ')

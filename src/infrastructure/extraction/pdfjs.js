@@ -15,7 +15,8 @@ export function loadPdfjs() {
 export async function renderPdfPages(file, { scale = 2.5, onProgress } = {}) {
   const pdfjs = await loadPdfjs()
   const data = new Uint8Array(await file.arrayBuffer())
-  const doc = await pdfjs.getDocument({ data, isEvalSupported: false }).promise
+  const loadingTask = pdfjs.getDocument({ data, isEvalSupported: false })
+  const doc = await loadingTask.promise
 
   try {
     const canvases = []
@@ -34,6 +35,6 @@ export async function renderPdfPages(file, { scale = 2.5, onProgress } = {}) {
     }
     return canvases
   } finally {
-    await doc.destroy()
+    await loadingTask.destroy()
   }
 }

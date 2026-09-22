@@ -50,6 +50,11 @@ export const SECTIONS = {
   },
 }
 
+export const STANDALONE_HEADERS = [
+  ...SECTIONS.payer.exact,
+  ...SECTIONS.payee.exact,
+]
+
 export const SECTION_BREAKS = [
   'informacoes adicionais',
   'codigo de barras',

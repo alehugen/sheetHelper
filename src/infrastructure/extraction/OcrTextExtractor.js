@@ -1,5 +1,7 @@
 import { ExtractionError, SourceKind } from '@/application/ports/TextExtractor'
 
+import { STANDALONE_HEADERS } from '@/domain/receipt/parsing/vocabulary'
+
 import { collectWords, composeLayout } from './layout'
 import { renderPdfPages } from './pdfjs'
 
@@ -37,7 +39,11 @@ async function recognizeAll(images, { onProgress } = {}) {
       { blocks: true, text: true },
     )
     const words = collectWords(data.blocks)
-    texts.push(words.length ? composeLayout(words) : (data.text ?? ''))
+    texts.push(
+      words.length
+        ? composeLayout(words, { standaloneHeaders: STANDALONE_HEADERS })
+        : (data.text ?? ''),
+    )
     onProgress?.((index + 1) / images.length)
   }
 
