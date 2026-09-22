@@ -4,7 +4,16 @@ export const SECTIONS = {
   payer: {
     labels: [
       'quem pagou',
+      'quem enviou',
       'dados do pagador',
+      'dados do remetente',
+      'nome do pagador',
+      'origem dos recursos',
+      'debitado da conta',
+      'conta de debito',
+      'debito em conta',
+      'enviado por',
+      'pago por',
       'conta de origem',
       'dados da origem',
       'conta debitada',
@@ -21,7 +30,12 @@ export const SECTIONS = {
   payee: {
     labels: [
       'quem recebeu',
+      'quem vai receber',
       'dados do recebedor',
+      'dados do destinatario',
+      'nome do favorecido',
+      'nome do beneficiario',
+      'creditado em',
       'conta de destino',
       'dados do favorecido',
       'creditado para',

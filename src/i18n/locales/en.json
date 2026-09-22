@@ -49,6 +49,7 @@
   "warnings": {
     "barcode-mismatch": "The barcode does not match the amount on the receipt. Likely a reading error.",
     "barcode-unverified": "The barcode could not be validated. Double-check the reference.",
+    "date-mismatch": "The date read does not match the one embedded in the Pix transaction ID.",
     "low-confidence": "Few fields were recognised. Check everything before exporting.",
     "missing-required": "Required fields are empty."
   },

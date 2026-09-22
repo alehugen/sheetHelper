@@ -9,7 +9,7 @@ import { formatDocument } from '../shared/document.js'
 import {
   FieldKind,
   RECEIPT_FIELDS,
-  REQUIRED_FIELD_KEYS,
+  REQUIRED_GROUPS,
   getField,
 } from './ReceiptFields.js'
 import { ReceiptType } from './ReceiptType.js'
@@ -29,11 +29,14 @@ export function withField(receipt, key, value) {
   return { ...receipt, [key]: value === '' ? null : value }
 }
 
+function isEmpty(value) {
+  return value === null || value === undefined || value === ''
+}
+
 export function missingRequiredFields(receipt) {
-  return REQUIRED_FIELD_KEYS.filter((key) => {
-    const value = receipt?.[key]
-    return value === null || value === undefined || value === ''
-  })
+  return REQUIRED_GROUPS.filter((group) =>
+    group.every((key) => isEmpty(receipt?.[key])),
+  ).map((group) => group[0])
 }
 
 export function filledFieldCount(receipt) {

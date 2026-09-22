@@ -49,6 +49,7 @@
   "warnings": {
     "barcode-mismatch": "O código de barras lido não confere com o valor do comprovante. Provável erro de leitura.",
     "barcode-unverified": "Não foi possível validar o código de barras lido. Confira o identificador.",
+    "date-mismatch": "A data lida não confere com a data embutida no ID da transação Pix.",
     "low-confidence": "Poucos campos foram reconhecidos. Confira tudo antes de exportar.",
     "missing-required": "Campos obrigatórios estão vazios."
   },

@@ -31,8 +31,9 @@ numa API pública (só quando você troca a moeda). Nenhuma delas carrega dado s
 - Lê **PDF do banco, foto e print** de comprovante de Pix, TED e boleto
 - Lê **extrato de conta corrente**, virando uma linha por lançamento — um PDF
   com 150 Pix recebidos vira 150 linhas de uma vez
-- Extrai 14 campos: tipo, data, hora, valor, pagador e recebedor (nome, CPF/CNPJ
-  e banco), identificador, vencimento e descrição
+- Extrai 14 campos. Os três primeiros da planilha são os que mais importam na
+  conciliação — **data, valor e remetente** — e são também os únicos tratados
+  como obrigatórios
 - Mostra tudo numa **tabela editável** antes de exportar, com o comprovante
   original ao lado para conferência
 - Exporta **.xlsx** (com data, moeda e largura de coluna de verdade) ou **.csv**
@@ -160,6 +161,28 @@ A extração casa rótulos ancorados no início da linha
 Dado faltando é melhor que dado errado: quando a seção do pagador ou do
 recebedor não é encontrada, os campos ficam vazios em vez de receberem um chute.
 Existe uma tela de revisão justamente para isso.
+
+### Conferência cruzada da data pelo ID Pix
+
+O identificador ponta a ponta de um Pix não é aleatório: ele é
+`E` + ISPB do banco (8) + `AAAAMMDD` + `HHMM` + 11 caracteres aleatórios. Ou
+seja, **a data da transação está embutida no próprio ID**.
+
+```
+E60701190202609221130DY5RDBWE2EU
+ └─ISPB──┘└─data──┘└hora┘
+          2026-09-22  11:30 UTC
+```
+
+Isso dá duas coisas de graça para o campo mais crítico:
+
+- quando a data não é lida do texto, ela é **recuperada do ID**;
+- quando é lida mas diverge do ID, o comprovante recebe um aviso — foi assim que
+  o app passou a detectar sozinho um dígito de data trocado pelo OCR.
+
+A tolerância é de um dia, porque o carimbo do ID está em UTC e o comprovante
+mostra o horário local: uma transação às 22h em Brasília aparece no ID já no dia
+seguinte.
 
 ### Conferência cruzada do boleto
 

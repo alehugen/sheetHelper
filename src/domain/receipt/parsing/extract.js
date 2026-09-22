@@ -5,6 +5,7 @@ import { fold, upperCase } from '../../shared/text.js'
 import { ReceiptType } from '../ReceiptType.js'
 import { ReceiptWarning } from '../ReceiptWarning.js'
 import { codeAgreesWithAmount, describeBoletoCode } from '../boletoCode.js'
+import { daysApart, describePixId } from '../pixId.js'
 
 import {
   PATTERNS,
@@ -24,6 +25,8 @@ import {
 } from './vocabulary.js'
 
 const BREAK_SPEC = { labels: SECTION_BREAKS }
+
+const MAX_DATE_DRIFT_DAYS = 1
 
 export function classify(text) {
   const ranked = TYPE_KEYWORDS.map(([type, keywords]) => ({
@@ -117,18 +120,25 @@ export function extractReceipt({ body, footer }) {
 
   const payer = extractParty(body, 'payer')
   const payee = extractParty(body, 'payee')
-  const { date, time } = extractMoment(body)
+  const { date: readDate, time } = extractMoment(body)
   const amount = extractAmount(body)
 
   const code = findLabeledDigits(body, FIELD_LABELS.barcode, { minDigits: 30 })
   const decoded = describeBoletoCode(code)
   const agrees = codeAgreesWithAmount(decoded, amount)
 
+  const transactionId = extractTransactionId(body, footer, code)
+  const pix = describePixId(transactionId)
+  const date = readDate ?? pix?.date ?? null
+
   const warnings = []
   if (decoded && amount !== null && !agrees) {
     warnings.push(ReceiptWarning.BARCODE_MISMATCH)
   } else if (code && !decoded) {
     warnings.push(ReceiptWarning.BARCODE_UNVERIFIED)
+  }
+  if (readDate && pix && daysApart(readDate, pix.date) > MAX_DATE_DRIFT_DAYS) {
+    warnings.push(ReceiptWarning.DATE_MISMATCH)
   }
 
   const labelledDueDate = parseDate(
@@ -150,7 +160,7 @@ export function extractReceipt({ body, footer }) {
       payeeName: payee.name,
       payeeDocument: payee.document,
       payeeBank: payee.bank,
-      transactionId: extractTransactionId(body, footer, code),
+      transactionId,
       description: findLabeled(body, FIELD_LABELS.description),
     },
   }
