@@ -1,5 +1,5 @@
 <script setup>
-import { watch } from 'vue'
+import { nextTick, watch } from 'vue'
 import { useCurrencyInput } from 'vue-currency-input'
 
 import { useReceiptFormat } from '../../composables/useReceiptFormat'
@@ -30,23 +30,33 @@ const { inputRef, numberValue, setOptions, setValue } = useCurrencyInput(
   false,
 )
 
-let lastPushed = null
+let syncing = false
 
 watch(
   () => [props.modelValue, currency.value, locale.value],
-  () => {
+  async () => {
+    syncing = true
     setOptions(currencyOptions())
-    lastPushed = props.modelValue === null ? null : toDisplay(props.modelValue)
-    setValue(lastPushed)
+    setValue(props.modelValue === null ? null : toDisplay(props.modelValue))
+    await nextTick()
+    syncing = false
   },
   { immediate: true },
 )
 
 watch(numberValue, (value) => {
-  const current = value === undefined ? null : value
-  if (current === lastPushed) return
-  lastPushed = current
-  emit('update:modelValue', current === null ? null : toBase(current))
+  if (syncing) return
+
+  const next = value === null || value === undefined ? null : toBase(value)
+  if (next === props.modelValue) return
+
+  const unchanged =
+    next !== null &&
+    props.modelValue !== null &&
+    Math.abs(next - props.modelValue) < 0.005
+  if (unchanged) return
+
+  emit('update:modelValue', next)
 })
 </script>
 

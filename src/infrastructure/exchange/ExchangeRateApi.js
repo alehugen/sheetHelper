@@ -5,7 +5,7 @@ import {
 import { BASE_CURRENCY, CURRENCIES } from '@/domain/shared/currency'
 
 const ENDPOINT = `https://open.er-api.com/v6/latest/${BASE_CURRENCY}`
-const STORAGE_KEY = 'ticketexport:rates:v1'
+const STORAGE_KEY = 'sheethelper:rates:v1'
 
 function readCache(storage) {
   try {

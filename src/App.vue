@@ -38,7 +38,7 @@ const nav = computed(() => [
             height="28"
           />
           <span class="logo-type"
-            >ticket<span class="text-subtle">Export</span></span
+            >sheet<span class="text-subtle">Helper</span></span
           >
         </RouterLink>
 

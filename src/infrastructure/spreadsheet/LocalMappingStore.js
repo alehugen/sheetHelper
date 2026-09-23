@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'ticketexport:mappings:v2'
+const STORAGE_KEY = 'sheethelper:mappings:v2'
 
 function safeParse(raw) {
   try {

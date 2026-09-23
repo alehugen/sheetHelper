@@ -109,7 +109,7 @@ export function createXlsxWriter() {
       )
 
       return writeXlsxFile([header, ...rows], {
-        sheet: 'ticketExport',
+        sheet: 'sheetHelper',
         columns: columnWidths(receipts, labels, context),
         stickyRowsCount: 1,
         showGridLines: false,

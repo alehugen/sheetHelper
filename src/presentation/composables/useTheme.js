@@ -4,7 +4,7 @@ import { computed } from 'vue'
 export function useTheme() {
   const mode = useColorMode({
     attribute: 'data-theme',
-    storageKey: 'ticketexport:theme',
+    storageKey: 'sheethelper:theme',
     emitAuto: true,
     modes: { light: 'light', dark: 'dark' },
   })

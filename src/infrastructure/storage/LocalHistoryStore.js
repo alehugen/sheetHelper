@@ -1,6 +1,6 @@
 import { HISTORY_LIMIT } from '@/application/ports/HistoryStore'
 
-const STORAGE_KEY = 'ticketexport:history:v1'
+const STORAGE_KEY = 'sheethelper:history:v1'
 
 function safeParse(raw) {
   try {

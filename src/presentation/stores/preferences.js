@@ -16,8 +16,8 @@ import {
 } from '@/i18n'
 
 export const usePreferencesStore = defineStore('preferences', () => {
-  const locale = useStorage('ticketexport:locale', DEFAULT_LOCALE)
-  const currency = useStorage('ticketexport:currency', BASE_CURRENCY)
+  const locale = useStorage('sheethelper:locale', DEFAULT_LOCALE)
+  const currency = useStorage('sheethelper:currency', BASE_CURRENCY)
 
   const rates = ref(
     container.exchangeRates.cached()?.rates ?? { [BASE_CURRENCY]: 1 },

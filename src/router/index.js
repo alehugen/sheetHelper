@@ -44,8 +44,8 @@ router.beforeEach((to) => {
 
 router.afterEach((to) => {
   document.title = to.meta.titleKey
-    ? `${i18n.global.t(to.meta.titleKey)} · ticketExport`
-    : 'ticketExport'
+    ? `${i18n.global.t(to.meta.titleKey)} · sheetHelper`
+    : 'sheetHelper'
 })
 
 export default router
