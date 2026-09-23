@@ -1,12 +1,17 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView, useRoute } from 'vue-router'
 
 import AppFooter from './presentation/components/layout/AppFooter.vue'
+import AppStepper from './presentation/components/layout/AppStepper.vue'
 import AppSettings from './presentation/components/layout/AppSettings.vue'
 
 const { t } = useI18n()
+const route = useRoute()
+
+const FLOW = ['upload', 'review', 'fill']
+const inFlow = computed(() => FLOW.includes(route.name))
 
 const nav = computed(() => [
   { to: { name: 'upload' }, label: t('nav.upload') },
@@ -42,7 +47,7 @@ const nav = computed(() => [
             v-for="item in nav"
             :key="item.label"
             :to="item.to"
-            class="text-muted hover:bg-ink-100 hover:text-body rounded-control px-3 py-1.5 text-sm font-medium transition-colors"
+            class="text-muted hover:bg-ink-100 hover:text-body rounded-control px-3 py-1.5 text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]"
             active-class="!bg-ink-200 !text-title"
           >
             {{ item.label }}
@@ -54,6 +59,12 @@ const nav = computed(() => [
     </header>
 
     <main class="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-6">
+      <Transition name="slide-fade">
+        <div v-if="inFlow" class="mx-auto mb-10 max-w-2xl">
+          <AppStepper />
+        </div>
+      </Transition>
+
       <RouterView v-slot="{ Component }">
         <Transition name="page" mode="out-in">
           <component :is="Component" />

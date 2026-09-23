@@ -14,6 +14,15 @@ const { isDark, toggle } = useTheme()
 const preferences = usePreferencesStore()
 const { locale, currency, ratesFailed, activeRate } = storeToRefs(preferences)
 
+const quote = computed(() => {
+  const rate = activeRate.value
+  if (!Number.isFinite(rate) || rate === 1) return null
+
+  return rate < 1
+    ? { from: currency.value, to: 'BRL', rate: (1 / rate).toFixed(2) }
+    : { from: 'BRL', to: currency.value, rate: rate.toFixed(2) }
+})
+
 const localeOptions = computed(() =>
   preferences.locales.map(({ code, label }) => ({ value: code, label })),
 )
@@ -55,12 +64,10 @@ const currencyOptions = computed(() =>
       <AppIcon name="alert" :size="13" />
     </span>
     <span
-      v-else-if="activeRate && activeRate !== 1"
+      v-else-if="quote"
       class="text-subtle text-numeric hidden text-[11px] lg:inline"
     >
-      {{
-        t('settings.rateNote', { rate: activeRate.toFixed(4), code: currency })
-      }}
+      {{ t('settings.rateNote', quote) }}
     </span>
   </div>
 </template>

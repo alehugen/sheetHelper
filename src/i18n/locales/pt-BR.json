@@ -14,7 +14,7 @@
   "settings": {
     "language": "Idioma",
     "currency": "Moeda",
-    "rateNote": "1 BRL = {rate} {code}",
+    "rateNote": "1 {from} = {rate} {to}",
     "rateUnavailable": "Cotação indisponível — exibindo em reais"
   },
   "common": {
@@ -25,7 +25,7 @@
   },
   "footer": "Processamento 100% local — nenhum comprovante sai do seu navegador.",
   "fields": {
-    "type": "Tipo",
+    "type": "Tipo de pagamento",
     "date": "Data",
     "time": "Hora",
     "amount": "Valor",
@@ -85,8 +85,6 @@
     "incomplete": "{count} incompleto(s)",
     "emptyTitle": "Nenhum comprovante ainda",
     "emptyDescription": "Envie arquivos para começar.",
-    "waitingTitle": "Processando",
-    "waitingDescription": "Assim que a leitura terminar os campos aparecem aqui.",
     "addMoreTitle": "Adicionar mais comprovantes",
     "addMoreDescription": "Arraste ou clique — eles entram na mesma planilha",
     "reading": "Leitura",
@@ -126,5 +124,18 @@
     "done": "Planilha preenchida com {count} lançamento(s).",
     "missingRequired": "Falta indicar onde vai: {fields}",
     "noRows": "Confira os comprovantes antes de preencher a planilha."
+  },
+  "steps": {
+    "upload": "Comprovantes",
+    "uploadHint": "PDF, foto ou extrato",
+    "review": "Conferência",
+    "reviewHint": "Corrija o que foi lido",
+    "fill": "Planilha",
+    "fillHint": "Baixe ou preencha a sua",
+    "locked": "Envie comprovantes para continuar"
+  },
+  "loading": {
+    "spreadsheet": "Lendo a planilha…",
+    "receipts": "Lendo os comprovantes…"
   }
 }

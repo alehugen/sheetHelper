@@ -111,6 +111,20 @@
     transform: translateY(-4px);
   }
 
+  .skeleton {
+    animation: skeleton-pulse 1.4s var(--ease-quick) infinite;
+  }
+
+  @keyframes skeleton-pulse {
+    0%,
+    100% {
+      opacity: 0.45;
+    }
+    50% {
+      opacity: 0.85;
+    }
+  }
+
   .page-enter-active {
     transition:
       opacity 260ms var(--ease-soft),

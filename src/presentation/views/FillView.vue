@@ -11,6 +11,7 @@ import AppCard from '../components/ui/AppCard.vue'
 import AppDropzone from '../components/ui/AppDropzone.vue'
 import AppIcon from '../components/ui/AppIcon.vue'
 import AppModal from '../components/ui/AppModal.vue'
+import AppSkeleton from '../components/ui/AppSkeleton.vue'
 import { useSpreadsheetFill } from '../composables/useSpreadsheetFill'
 import { useReceiptsStore } from '../stores/receipts'
 import { useTemplateStore } from '../stores/template'
@@ -18,7 +19,8 @@ import { useTemplateStore } from '../stores/template'
 const { t } = useI18n()
 const template = useTemplateStore()
 const receipts = useReceiptsStore()
-const { isLoaded, fileName, sheets, totalRows, error } = storeToRefs(template)
+const { isLoaded, isLoading, fileName, sheets, totalRows, error } =
+  storeToRefs(template)
 const {
   fillRows,
   blocked,
@@ -112,8 +114,28 @@ function accept(files) {
     </Transition>
 
     <Transition name="slide-fade" mode="out-in">
+      <div v-if="isLoading" key="loading" class="space-y-5">
+        <AppCard>
+          <div class="flex items-center gap-3">
+            <AppIcon name="sheet" :size="18" class="text-subtle shrink-0" />
+            <AppSkeleton class="flex-1" :lines="2" height="h-3" />
+          </div>
+        </AppCard>
+        <p class="text-muted text-xs">{{ t('loading.spreadsheet') }}</p>
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div
+            v-for="n in 6"
+            :key="n"
+            class="border-ink-200 bg-ink-100/40 rounded-control space-y-2 border p-3"
+          >
+            <AppSkeleton :lines="1" height="h-3" />
+            <AppSkeleton :lines="1" height="h-8" />
+          </div>
+        </div>
+      </div>
+
       <AppDropzone
-        v-if="!isLoaded"
+        v-else-if="!isLoaded"
         key="drop"
         accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         :multiple="false"

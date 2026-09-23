@@ -15,6 +15,7 @@ export const useTemplateStore = defineStore('template', () => {
   const fingerprint = ref(null)
   const assignments = ref({})
   const error = ref(null)
+  const isLoading = ref(false)
 
   const isLoaded = computed(() => sheets.value.length > 0)
   const columns = computed(() => sheets.value[0]?.columns ?? [])
@@ -30,6 +31,7 @@ export const useTemplateStore = defineStore('template', () => {
 
   async function load(file) {
     error.value = null
+    isLoading.value = true
     try {
       const buffer = new Uint8Array(await file.arrayBuffer())
       const result = container.fillSpreadsheet.analyze(buffer)
@@ -48,6 +50,8 @@ export const useTemplateStore = defineStore('template', () => {
     } catch (cause) {
       error.value = cause?.message ?? 'Não foi possível ler a planilha.'
       reset()
+    } finally {
+      isLoading.value = false
     }
   }
 
@@ -86,6 +90,7 @@ export const useTemplateStore = defineStore('template', () => {
     mapping,
     totalRows,
     isLoaded,
+    isLoading,
     error,
     load,
     assign,

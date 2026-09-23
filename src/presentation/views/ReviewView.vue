@@ -18,6 +18,7 @@ import AppEmptyState from '../components/ui/AppEmptyState.vue'
 import AppIcon from '../components/ui/AppIcon.vue'
 import AppModal from '../components/ui/AppModal.vue'
 import AppProgress from '../components/ui/AppProgress.vue'
+import AppSkeleton from '../components/ui/AppSkeleton.vue'
 import { useReceiptFormat } from '../composables/useReceiptFormat'
 import { useReceiptIntake } from '../composables/useReceiptIntake'
 import { useSpreadsheetExport } from '../composables/useSpreadsheetExport'
@@ -190,12 +191,15 @@ function startOver() {
         :title="t('review.emptyTitle')"
         :description="t('review.emptyDescription')"
       />
-      <AppEmptyState
-        v-else
-        icon="clock"
-        :title="t('review.waitingTitle')"
-        :description="t('review.waitingDescription')"
-      />
+      <div v-else class="space-y-3 px-5 py-5">
+        <p class="text-muted text-xs">{{ t('loading.receipts') }}</p>
+        <div v-for="n in 3" :key="n" class="flex items-center gap-3">
+          <AppSkeleton class="w-14 shrink-0" :lines="1" height="h-5" />
+          <AppSkeleton class="flex-1" :lines="1" height="h-8" />
+          <AppSkeleton class="w-28 shrink-0" :lines="1" height="h-8" />
+          <AppSkeleton class="w-40 shrink-0" :lines="1" height="h-8" />
+        </div>
+      </div>
     </AppCard>
 
     <AppDropzone

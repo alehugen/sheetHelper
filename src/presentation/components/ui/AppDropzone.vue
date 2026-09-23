@@ -57,10 +57,10 @@ const isActive = computed(() => isOverDropZone.value && !props.disabled)
     role="button"
     tabindex="0"
     :aria-disabled="disabled || undefined"
-    class="rounded-card flex cursor-pointer flex-col items-center justify-center gap-3 border-2 border-dashed px-6 py-14 text-center transition-colors"
+    class="rounded-card flex cursor-pointer flex-col items-center justify-center gap-3 border-2 border-dashed px-6 py-14 text-center transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
     :class="[
       isActive
-        ? 'border-ink-500 bg-ink-200'
+        ? 'border-ink-500 bg-ink-200 scale-[1.01]'
         : 'border-ink-300 bg-ink-50 hover:border-ink-400 hover:bg-ink-100/70',
       disabled && 'pointer-events-none opacity-50',
     ]"

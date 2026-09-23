@@ -14,7 +14,7 @@
   "settings": {
     "language": "Language",
     "currency": "Currency",
-    "rateNote": "1 BRL = {rate} {code}",
+    "rateNote": "1 {from} = {rate} {to}",
     "rateUnavailable": "Exchange rate unavailable — showing amounts in BRL"
   },
   "common": {
@@ -25,7 +25,7 @@
   },
   "footer": "Fully local processing — no receipt ever leaves your browser.",
   "fields": {
-    "type": "Type",
+    "type": "Payment type",
     "date": "Date",
     "time": "Time",
     "amount": "Amount",
@@ -85,8 +85,6 @@
     "incomplete": "{count} incomplete",
     "emptyTitle": "No receipts yet",
     "emptyDescription": "Upload files to get started.",
-    "waitingTitle": "Processing",
-    "waitingDescription": "Fields show up here as soon as reading finishes.",
     "addMoreTitle": "Add more receipts",
     "addMoreDescription": "Drag or click — they join the same spreadsheet",
     "reading": "Reading",
@@ -126,5 +124,18 @@
     "done": "Spreadsheet filled with {count} entries.",
     "missingRequired": "Still to assign: {fields}",
     "noRows": "Review the receipts before filling the spreadsheet."
+  },
+  "steps": {
+    "upload": "Receipts",
+    "uploadHint": "PDF, photo or statement",
+    "review": "Review",
+    "reviewHint": "Fix what was read",
+    "fill": "Spreadsheet",
+    "fillHint": "Download or fill yours",
+    "locked": "Upload receipts to continue"
+  },
+  "loading": {
+    "spreadsheet": "Reading the spreadsheet…",
+    "receipts": "Reading the receipts…"
   }
 }

@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import { i18n } from '@/i18n'
+import { useReceiptsStore } from '@/presentation/stores/receipts'
 
 const routes = [
   {
@@ -36,9 +37,8 @@ export const router = createRouter({
   scrollBehavior: () => ({ top: 0 }),
 })
 
-router.beforeEach(async (to) => {
+router.beforeEach((to) => {
   if (!to.meta.requiresReceipts) return true
-  const { useReceiptsStore } = await import('@/presentation/stores/receipts')
   return useReceiptsStore().hasReceipts ? true : { name: 'upload' }
 })
 
