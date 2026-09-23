@@ -51,7 +51,9 @@
     "barcode-unverified": "Não foi possível validar o código de barras lido. Confira o identificador.",
     "date-mismatch": "A data lida não confere com a data embutida no ID da transação Pix.",
     "low-confidence": "Poucos campos foram reconhecidos. Confira tudo antes de exportar.",
-    "missing-required": "Campos obrigatórios estão vazios."
+    "missing-required": "Campos obrigatórios estão vazios.",
+    "duplicate": "Este lançamento já existe na planilha.",
+    "possible-duplicate": "Já existe um lançamento com a mesma data e valor na planilha. Confira antes de confirmar."
   },
   "upload": {
     "badge": "100% no seu navegador",
@@ -104,5 +106,26 @@
     "extracted": "Texto extraído",
     "unsupported": "Pré-visualização não disponível para este formato.",
     "empty": "Nenhum texto foi extraído deste arquivo."
+  },
+  "fill": {
+    "modeNew": "Criar nova planilha",
+    "modeFill": "Preencher a minha planilha",
+    "dropTitle": "Solte aqui a planilha que você já usa",
+    "dropDescription": "arquivo .xlsx — ele volta com as linhas novas e nada mais alterado",
+    "loaded": "{sheets} aba(s) · {rows} lançamento(s) já registrados",
+    "replace": "Trocar planilha",
+    "mappingTitle": "Preenchendo",
+    "untouched": "{count} coluna(s) da sua planilha não serão tocadas",
+    "adjust": "ajustar",
+    "pendingTitle": "Falta dizer onde vai cada campo",
+    "pendingHint": "Você define uma vez. Nas próximas planilhas iguais, nem pergunto.",
+    "none": "não preencher",
+    "credit": "entrada",
+    "debit": "saída",
+    "sheet": "Aba",
+    "targetRow": "Linha",
+    "button": "Preencher planilha",
+    "needTemplate": "Solte primeiro a planilha que será preenchida.",
+    "done": "Planilha preenchida com {count} lançamento(s)."
   }
 }

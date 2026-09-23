@@ -51,7 +51,9 @@
     "barcode-unverified": "The barcode could not be validated. Double-check the reference.",
     "date-mismatch": "The date read does not match the one embedded in the Pix transaction ID.",
     "low-confidence": "Few fields were recognised. Check everything before exporting.",
-    "missing-required": "Required fields are empty."
+    "missing-required": "Required fields are empty.",
+    "duplicate": "This entry already exists in the spreadsheet.",
+    "possible-duplicate": "The spreadsheet already has an entry with the same date and amount. Check before confirming."
   },
   "upload": {
     "badge": "Runs entirely in your browser",
@@ -104,5 +106,26 @@
     "extracted": "Extracted text",
     "unsupported": "Preview is not available for this format.",
     "empty": "No text was extracted from this file."
+  },
+  "fill": {
+    "modeNew": "Create a new spreadsheet",
+    "modeFill": "Fill my spreadsheet",
+    "dropTitle": "Drop the spreadsheet you already use",
+    "dropDescription": ".xlsx file — it comes back with the new rows and nothing else changed",
+    "loaded": "{sheets} sheet(s) · {rows} entries already recorded",
+    "replace": "Replace spreadsheet",
+    "mappingTitle": "Filling",
+    "untouched": "{count} of your columns will not be touched",
+    "adjust": "adjust",
+    "pendingTitle": "Tell me where each field goes",
+    "pendingHint": "Set it once. For the same spreadsheet next time, I won't ask.",
+    "none": "leave empty",
+    "credit": "money in",
+    "debit": "money out",
+    "sheet": "Sheet",
+    "targetRow": "Row",
+    "button": "Fill spreadsheet",
+    "needTemplate": "Drop the spreadsheet to be filled first.",
+    "done": "Spreadsheet filled with {count} entries."
   }
 }

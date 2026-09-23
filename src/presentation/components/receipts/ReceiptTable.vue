@@ -7,13 +7,15 @@ import { warningMessage } from '@/domain/receipt/ReceiptWarning'
 import { useReceiptFormat } from '../../composables/useReceiptFormat'
 import AppBadge from '../ui/AppBadge.vue'
 import AppIcon from '../ui/AppIcon.vue'
+import AppSelect from '../ui/AppSelect.vue'
 import EditableCell from './EditableCell.vue'
 
 defineProps({
   rows: { type: Array, required: true },
+  sheets: { type: Array, default: () => [] },
 })
 
-const emit = defineEmits(['update', 'remove', 'preview'])
+const emit = defineEmits(['update', 'remove', 'preview', 'sheet'])
 
 const { t } = useI18n()
 const { labels } = useReceiptFormat()
@@ -36,6 +38,12 @@ function confidenceTone(value) {
             class="text-muted bg-ink-100 sticky left-0 z-10 px-3 py-2 text-[11px] font-semibold tracking-wide uppercase"
           >
             {{ t('review.reading') }}
+          </th>
+          <th
+            v-if="sheets.length"
+            class="text-muted px-2 py-2 text-[11px] font-semibold tracking-wide whitespace-nowrap uppercase"
+          >
+            {{ t('fill.sheet') }}
           </th>
           <th
             v-for="field in fields"
@@ -68,6 +76,28 @@ function confidenceTone(value) {
               >
                 <AppIcon name="alert" :size="11" />
               </AppBadge>
+            </div>
+          </td>
+
+          <td v-if="sheets.length" class="px-2 py-1 whitespace-nowrap">
+            <div class="flex items-center gap-1.5">
+              <AppSelect
+                size="sm"
+                :label="t('fill.sheet')"
+                :options="
+                  sheets.map((sheet, index) => ({
+                    value: String(index),
+                    label: sheet.name,
+                  }))
+                "
+                :model-value="String(row.sheetIndex)"
+                @update:model-value="
+                  emit('sheet', row.jobId, row.index, Number($event))
+                "
+              />
+              <span class="text-subtle text-numeric text-[11px]">
+                {{ t('fill.targetRow') }} {{ row.targetRow }}
+              </span>
             </div>
           </td>
 

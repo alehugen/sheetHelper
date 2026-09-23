@@ -8,6 +8,8 @@ import {
 } from '@/domain/shared/currency'
 import { formatDocument } from '@/domain/shared/document'
 
+import { toUtcDate } from './excelDate'
+
 const MIN_WIDTH = 11
 const MAX_WIDTH = 44
 
@@ -33,12 +35,6 @@ const ALIGNMENT = {
   [FieldKind.MONEY]: 'right',
   [FieldKind.DATE]: 'center',
   [FieldKind.TIME]: 'center',
-}
-
-function toUtcDate(iso) {
-  const [year, month, day] = String(iso).split('-').map(Number)
-  if (!year || !month || !day) return null
-  return new Date(Date.UTC(year, month - 1, day))
 }
 
 function moneyFormat(currency, locale) {

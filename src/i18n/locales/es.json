@@ -51,7 +51,9 @@
     "barcode-unverified": "No se pudo validar el código de barras. Verifica la referencia.",
     "date-mismatch": "La fecha leída no coincide con la incrustada en el ID de la transacción Pix.",
     "low-confidence": "Se reconocieron pocos campos. Revisa todo antes de exportar.",
-    "missing-required": "Hay campos obligatorios vacíos."
+    "missing-required": "Hay campos obligatorios vacíos.",
+    "duplicate": "Este asiento ya existe en la planilla.",
+    "possible-duplicate": "Ya hay un asiento con la misma fecha e importe en la planilla. Verifica antes de confirmar."
   },
   "upload": {
     "badge": "100% en tu navegador",
@@ -104,5 +106,26 @@
     "extracted": "Texto extraído",
     "unsupported": "Vista previa no disponible para este formato.",
     "empty": "No se extrajo texto de este archivo."
+  },
+  "fill": {
+    "modeNew": "Crear una planilla nueva",
+    "modeFill": "Completar mi planilla",
+    "dropTitle": "Suelta aquí la planilla que ya usas",
+    "dropDescription": "archivo .xlsx — vuelve con las filas nuevas y nada más alterado",
+    "loaded": "{sheets} hoja(s) · {rows} asientos ya registrados",
+    "replace": "Cambiar planilla",
+    "mappingTitle": "Completando",
+    "untouched": "{count} columna(s) de tu planilla no serán tocadas",
+    "adjust": "ajustar",
+    "pendingTitle": "Falta indicar dónde va cada campo",
+    "pendingHint": "Lo defines una vez. En la próxima planilla igual, no pregunto.",
+    "none": "dejar vacío",
+    "credit": "entrada",
+    "debit": "salida",
+    "sheet": "Hoja",
+    "targetRow": "Fila",
+    "button": "Completar planilla",
+    "needTemplate": "Primero suelta la planilla que será completada.",
+    "done": "Planilla completada con {count} asiento(s)."
   }
 }

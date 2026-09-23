@@ -27,6 +27,7 @@ export const useReceiptsStore = defineStore('receipts', () => {
         receipt: entry.receipt,
         confidence: entry.confidence,
         warnings: entry.warnings,
+        sheetOverride: entry.sheetOverride ?? null,
       })),
     ),
   )
@@ -124,6 +125,11 @@ export const useReceiptsStore = defineStore('receipts', () => {
     entry.receipt = withField(entry.receipt, key, value)
   }
 
+  function setSheetOverride(jobId, index, sheetIndex) {
+    const entry = find(jobId)?.entries[index]
+    if (entry) entry.sheetOverride = sheetIndex
+  }
+
   function removeRow(jobId, index) {
     const job = find(jobId)
     if (!job) return
@@ -156,6 +162,7 @@ export const useReceiptsStore = defineStore('receipts', () => {
     processQueue,
     retry,
     updateField,
+    setSheetOverride,
     removeRow,
     removeJob,
     reset,

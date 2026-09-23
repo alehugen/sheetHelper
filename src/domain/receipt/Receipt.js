@@ -29,7 +29,7 @@ export function withField(receipt, key, value) {
   return { ...receipt, [key]: value === '' ? null : value }
 }
 
-function isEmpty(value) {
+export function isEmpty(value) {
   return value === null || value === undefined || value === ''
 }
 
