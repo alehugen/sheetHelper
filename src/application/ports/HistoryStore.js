@@ -6,6 +6,7 @@ export function createHistoryEntry({
   fileName,
   format,
   receipts,
+  target = null,
 }) {
   return {
     id,
@@ -13,6 +14,7 @@ export function createHistoryEntry({
     fileName,
     format,
     receipts,
+    target,
     count: receipts.length,
     total: receipts.reduce(
       (sum, receipt) => sum + (Number(receipt.amount) || 0),

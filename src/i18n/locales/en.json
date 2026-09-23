@@ -97,7 +97,9 @@
     "emptyTitle": "No spreadsheet exported yet",
     "emptyDescription": "Once you export, it shows up here.",
     "emptyCta": "Upload receipts",
-    "summary": "{count} receipt(s)"
+    "summary": "{count} receipt(s)",
+    "filled": "filled",
+    "intoSheets": "into {sheets}"
   },
   "preview": {
     "title": "Original receipt",

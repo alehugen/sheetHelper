@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 
 import { SpreadsheetFormat } from '@/application/ports/SpreadsheetWriter'
 
+import AppBadge from '../components/ui/AppBadge.vue'
 import AppButton from '../components/ui/AppButton.vue'
 import AppCard from '../components/ui/AppCard.vue'
 import AppEmptyState from '../components/ui/AppEmptyState.vue'
@@ -77,13 +78,26 @@ function when(iso) {
           </div>
 
           <div class="min-w-0 flex-1">
-            <p class="text-title truncate font-mono text-xs font-medium">
-              {{ entry.fileName }}
+            <p class="flex items-center gap-2">
+              <span class="text-title truncate font-mono text-xs font-medium">
+                {{ entry.fileName }}
+              </span>
+              <AppBadge v-if="entry.target" tone="success">
+                {{ t('history.filled') }}
+              </AppBadge>
             </p>
             <p class="text-muted mt-0.5 text-xs">
               {{ when(entry.createdAt) }} ·
               {{ t('history.summary', { count: entry.count }) }} ·
               <span class="text-numeric">{{ money(entry.total) }}</span>
+              <template v-if="entry.target?.sheets?.length">
+                ·
+                {{
+                  t('history.intoSheets', {
+                    sheets: entry.target.sheets.join(', '),
+                  })
+                }}
+              </template>
             </p>
           </div>
 

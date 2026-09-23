@@ -33,5 +33,6 @@ export const container = {
     reader: spreadsheetReader,
     filler: spreadsheetFiller,
     mappingStore,
+    historyStore,
   }),
 }

@@ -97,7 +97,9 @@
     "emptyTitle": "Nenhuma planilha exportada ainda",
     "emptyDescription": "Assim que você exportar, ela aparece aqui.",
     "emptyCta": "Enviar comprovantes",
-    "summary": "{count} comprovante(s)"
+    "summary": "{count} comprovante(s)",
+    "filled": "preenchida",
+    "intoSheets": "em {sheets}"
   },
   "preview": {
     "title": "Comprovante original",

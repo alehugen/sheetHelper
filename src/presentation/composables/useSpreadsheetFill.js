@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { container } from '@/container'
 import { downloadBlob } from '@/infrastructure/download'
 
+import { useHistoryStore } from '../stores/history'
 import { useTemplateStore } from '../stores/template'
 import { useFillRows } from './useFillRows'
 
@@ -13,6 +14,7 @@ const XLSX_MIME =
 export function useSpreadsheetFill() {
   const { t } = useI18n()
   const template = useTemplateStore()
+  const history = useHistoryStore()
   const { fillRows, blocked, missingAssignments, canFill } = useFillRows()
 
   const isFilling = ref(false)
@@ -31,10 +33,12 @@ export function useSpreadsheetFill() {
         rows: fillRows.value,
         mapping: template.mapping,
         sheets: template.sheets,
+        fileName: template.fileName,
         translateType: (value) => t(`receiptType.${value}`),
       })
 
       downloadBlob(new Blob([bytes], { type: XLSX_MIME }), template.fileName)
+      history.refresh()
       done.value = fillRows.value.length
       return template.fileName
     } catch (cause) {

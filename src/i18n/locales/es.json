@@ -97,7 +97,9 @@
     "emptyTitle": "Todavía no exportaste ninguna planilla",
     "emptyDescription": "Cuando exportes, aparecerá aquí.",
     "emptyCta": "Subir comprobantes",
-    "summary": "{count} comprobante(s)"
+    "summary": "{count} comprobante(s)",
+    "filled": "completada",
+    "intoSheets": "en {sheets}"
   },
   "preview": {
     "title": "Comprobante original",
