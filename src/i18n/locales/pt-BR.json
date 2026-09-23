@@ -108,24 +108,23 @@
     "empty": "Nenhum texto foi extraído deste arquivo."
   },
   "fill": {
-    "modeNew": "Criar nova planilha",
-    "modeFill": "Preencher a minha planilha",
     "dropTitle": "Solte aqui a planilha que você já usa",
     "dropDescription": "arquivo .xlsx — ele volta com as linhas novas e nada mais alterado",
     "loaded": "{sheets} aba(s) · {rows} lançamento(s) já registrados",
     "replace": "Trocar planilha",
-    "mappingTitle": "Preenchendo",
-    "untouched": "{count} coluna(s) da sua planilha não serão tocadas",
-    "adjust": "ajustar",
-    "pendingTitle": "Falta dizer onde vai cada campo",
-    "pendingHint": "Você define uma vez. Nas próximas planilhas iguais, nem pergunto.",
+    "goToFill": "Preencher a minha planilha",
+    "back": "Voltar à conferência",
+    "columnsTitle": "Colunas da sua planilha",
+    "columnsHint": "Escolha o que preenche cada coluna. O que você não escolher fica intocado.",
     "none": "não preencher",
-    "credit": "entrada",
-    "debit": "saída",
+    "formulaColumn": "tem fórmula — não será tocada",
+    "amountIn": "Valor recebido",
+    "amountOut": "Valor pago",
     "sheet": "Aba",
     "targetRow": "Linha",
-    "button": "Preencher planilha",
-    "needTemplate": "Solte primeiro a planilha que será preenchida.",
-    "done": "Planilha preenchida com {count} lançamento(s)."
+    "button": "Preencher e baixar",
+    "done": "Planilha preenchida com {count} lançamento(s).",
+    "missingRequired": "Falta indicar onde vai: {fields}",
+    "noRows": "Confira os comprovantes antes de preencher a planilha."
   }
 }

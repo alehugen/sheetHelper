@@ -36,7 +36,7 @@ const SIZES = {
 const isInert = computed(() => props.disabled || props.loading)
 
 const classes = computed(() => [
-  'rounded-control inline-flex items-center justify-center font-medium whitespace-nowrap transition-all duration-150 select-none',
+  'rounded-control inline-flex items-center justify-center font-medium whitespace-nowrap transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] select-none active:scale-[0.97]',
   VARIANTS[props.variant],
   SIZES[props.size],
   props.block && 'w-full',

@@ -28,7 +28,7 @@ function warningsFor(receipt, confidence, extra = []) {
   return warnings
 }
 
-export function parseReceipt(rawText, context = {}) {
+function parseReceipt(rawText, context = {}) {
   const lines = toLines(String(rawText ?? ''))
 
   if (!lines.length) {

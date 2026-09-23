@@ -9,7 +9,7 @@ export function isSupportedCurrency(code) {
   return CURRENCIES.some((currency) => currency.code === code)
 }
 
-export function getCurrency(code) {
+function getCurrency(code) {
   return CURRENCIES.find((currency) => currency.code === code) ?? CURRENCIES[0]
 }
 

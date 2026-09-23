@@ -7,7 +7,6 @@ import { useRouter } from 'vue-router'
 import { SpreadsheetFormat } from '@/application/ports/SpreadsheetWriter'
 import { ACCEPTED_TYPES } from '@/infrastructure/extraction'
 
-import SpreadsheetMapping from '../components/spreadsheet/SpreadsheetMapping.vue'
 import ProcessingPanel from '../components/receipts/ProcessingPanel.vue'
 import ReceiptPreview from '../components/receipts/ReceiptPreview.vue'
 import ReceiptTable from '../components/receipts/ReceiptTable.vue'
@@ -22,9 +21,7 @@ import AppProgress from '../components/ui/AppProgress.vue'
 import { useReceiptFormat } from '../composables/useReceiptFormat'
 import { useReceiptIntake } from '../composables/useReceiptIntake'
 import { useSpreadsheetExport } from '../composables/useSpreadsheetExport'
-import { useSpreadsheetFill } from '../composables/useSpreadsheetFill'
 import { useReceiptsStore } from '../stores/receipts'
-import { FlowMode, useTemplateStore } from '../stores/template'
 
 const { t } = useI18n()
 const store = useReceiptsStore()
@@ -33,38 +30,6 @@ const { accept } = useReceiptIntake()
 const { money } = useReceiptFormat()
 const { isExporting, pendingFormat, error, exportReceipts } =
   useSpreadsheetExport()
-
-const template = useTemplateStore()
-const isFillMode = computed(
-  () => template.mode === FlowMode.FILL && template.isLoaded,
-)
-const {
-  fillRows,
-  blocked,
-  canFill,
-  isFilling,
-  error: fillError,
-  done: filled,
-  fill,
-} = useSpreadsheetFill()
-
-const tableRows = computed(() =>
-  isFillMode.value ? fillRows.value : rows.value,
-)
-
-const destinations = computed(() => {
-  const groups = new Map()
-  for (const row of fillRows.value) {
-    if (!groups.has(row.sheetIndex)) {
-      groups.set(row.sheetIndex, { count: 0, from: row.targetRow })
-    }
-    groups.get(row.sheetIndex).count += 1
-  }
-  return [...groups.entries()].map(([index, info]) => ({
-    name: template.sheets[index]?.name ?? '',
-    ...info,
-  }))
-})
 
 const {
   jobs,
@@ -118,70 +83,47 @@ function startOver() {
         <p class="text-muted text-sm">{{ t('review.description') }}</p>
       </div>
 
-      <div class="flex items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2">
         <AppButton variant="ghost" size="sm" @click="startOver">
           {{ t('review.restart') }}
         </AppButton>
-        <template v-if="isFillMode">
-          <AppButton :loading="isFilling" :disabled="!canFill" @click="fill">
-            <template #icon><AppIcon name="sheet" /></template>
-            {{ t('fill.button') }}
-          </AppButton>
-        </template>
-        <template v-else>
-          <AppButton
-            variant="secondary"
-            :loading="isExporting && pendingFormat === SpreadsheetFormat.CSV"
-            :disabled="!rows.length || isExporting"
-            @click="exportReceipts(receipts, SpreadsheetFormat.CSV)"
-          >
-            <template #icon><AppIcon name="download" /></template>
-            CSV
-          </AppButton>
-          <AppButton
-            :loading="isExporting && pendingFormat === SpreadsheetFormat.XLSX"
-            :disabled="!rows.length || isExporting"
-            @click="exportReceipts(receipts, SpreadsheetFormat.XLSX)"
-          >
-            <template #icon><AppIcon name="sheet" /></template>
-            {{ t('review.download') }}
-          </AppButton>
-        </template>
+        <AppButton
+          variant="secondary"
+          :loading="isExporting && pendingFormat === SpreadsheetFormat.CSV"
+          :disabled="!rows.length || isExporting"
+          @click="exportReceipts(receipts, SpreadsheetFormat.CSV)"
+        >
+          <template #icon><AppIcon name="download" /></template>
+          CSV
+        </AppButton>
+        <AppButton
+          variant="secondary"
+          :loading="isExporting && pendingFormat === SpreadsheetFormat.XLSX"
+          :disabled="!rows.length || isExporting"
+          @click="exportReceipts(receipts, SpreadsheetFormat.XLSX)"
+        >
+          <template #icon><AppIcon name="sheet" /></template>
+          {{ t('review.download') }}
+        </AppButton>
+        <AppButton
+          :as="'router-link'"
+          :to="{ name: 'fill' }"
+          :disabled="!rows.length"
+        >
+          <template #icon><AppIcon name="upload" /></template>
+          {{ t('fill.goToFill') }}
+        </AppButton>
       </div>
     </header>
 
-    <p
-      v-if="error || fillError"
-      class="rounded-card border-danger/30 bg-danger-soft text-danger border px-4 py-3 text-xs"
-    >
-      {{ error || fillError }}
-    </p>
-
-    <p
-      v-if="filled"
-      class="rounded-card border-success/30 bg-success-soft text-success border px-4 py-3 text-xs"
-    >
-      {{ t('fill.done', { count: filled }) }}
-    </p>
-
-    <template v-if="isFillMode">
-      <SpreadsheetMapping />
-      <p v-if="destinations.length" class="text-muted text-xs">
-        <span
-          v-for="(destination, index) in destinations"
-          :key="destination.name"
-        >
-          <template v-if="index">· </template>
-          {{ destination.count }} × <strong>{{ destination.name }}</strong> ({{
-            t('fill.targetRow')
-          }}
-          {{ destination.from }})
-        </span>
+    <Transition name="fade">
+      <p
+        v-if="error"
+        class="rounded-card border-danger/30 bg-danger-soft text-danger border px-4 py-3 text-xs"
+      >
+        {{ error }}
       </p>
-      <p v-if="blocked.length" class="text-warning text-xs">
-        {{ t('review.incomplete', { count: blocked.length }) }}
-      </p>
-    </template>
+    </Transition>
 
     <div class="grid gap-4 sm:grid-cols-3">
       <AppCard v-for="stat in stats" :key="stat.label">
@@ -194,30 +136,34 @@ function startOver() {
       </AppCard>
     </div>
 
-    <AppCard
-      v-if="isRunning"
-      :title="t('review.processingTitle')"
-      :description="
-        t('review.processingProgress', { percent: overallProgress })
-      "
-    >
-      <AppProgress :value="overallProgress" />
-    </AppCard>
+    <Transition name="slide-fade">
+      <AppCard
+        v-if="isRunning"
+        :title="t('review.processingTitle')"
+        :description="
+          t('review.processingProgress', { percent: overallProgress })
+        "
+      >
+        <AppProgress :value="overallProgress" />
+      </AppCard>
+    </Transition>
 
-    <AppCard
-      v-if="unfinished.length"
-      :title="t('review.queueTitle')"
-      :description="t('review.queueCount', { count: unfinished.length })"
-      flush
-    >
-      <div class="px-4">
-        <ProcessingPanel
-          :jobs="unfinished"
-          @retry="store.retry"
-          @remove="store.removeJob"
-        />
-      </div>
-    </AppCard>
+    <Transition name="slide-fade">
+      <AppCard
+        v-if="unfinished.length"
+        :title="t('review.queueTitle')"
+        :description="t('review.queueCount', { count: unfinished.length })"
+        flush
+      >
+        <div class="px-4">
+          <ProcessingPanel
+            :jobs="unfinished"
+            @retry="store.retry"
+            @remove="store.removeJob"
+          />
+        </div>
+      </AppCard>
+    </Transition>
 
     <AppCard flush>
       <template #header>
@@ -233,12 +179,10 @@ function startOver() {
       </template>
 
       <ReceiptTable
-        v-if="tableRows.length"
-        :rows="tableRows"
-        :sheets="isFillMode ? template.sheets : []"
+        v-if="rows.length"
+        :rows="rows"
         @update="store.updateField"
         @remove="store.removeRow"
-        @sheet="store.setSheetOverride"
         @preview="previewId = $event"
       />
       <AppEmptyState

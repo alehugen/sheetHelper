@@ -1,10 +1,10 @@
 import { cnpj, cpf } from 'cpf-cnpj-validator'
 
-export function documentDigits(value) {
+function documentDigits(value) {
   return String(value ?? '').replace(/\D/g, '')
 }
 
-export function isMasked(value) {
+function isMasked(value) {
   return /[*x]/i.test(String(value ?? ''))
 }
 

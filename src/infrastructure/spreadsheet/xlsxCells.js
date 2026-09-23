@@ -2,7 +2,7 @@ import { strFromU8 } from 'fflate'
 
 const SHEET_PART = /^xl\/worksheets\/sheet\d+\.xml$/
 
-export function sheetParts(files) {
+function sheetParts(files) {
   return Object.keys(files)
     .filter((name) => SHEET_PART.test(name))
     .sort((a, b) => Number(a.match(/\d+/)[0]) - Number(b.match(/\d+/)[0]))

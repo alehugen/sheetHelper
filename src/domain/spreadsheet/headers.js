@@ -69,7 +69,7 @@ export const HEADER_VOCABULARY = {
 
 const ENTRIES = Object.entries(HEADER_VOCABULARY)
 
-export function matchHeader(title) {
+function matchHeader(title) {
   const text = String(title ?? '').trim()
   if (!text) return null
 

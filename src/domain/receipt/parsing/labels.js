@@ -94,7 +94,7 @@ export function labelAt(line, labels) {
   return best === -1 ? null : cleanValue(line.slice(best))
 }
 
-export function isNoiseLine(line) {
+function isNoiseLine(line) {
   return labelAt(line, NOISE_LABELS) !== null
 }
 
@@ -180,7 +180,7 @@ export function findLabeledDigits(lines, labels, options = {}) {
   return null
 }
 
-export function matchesSection(line, spec) {
+function matchesSection(line, spec) {
   const folded = fold(line)
   if (spec.exact?.some((word) => folded === fold(word))) return true
   return spec.labels?.length ? labelAt(line, spec.labels) !== null : false

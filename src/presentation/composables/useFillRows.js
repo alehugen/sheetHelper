@@ -2,8 +2,12 @@ import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 
 import { ReceiptWarning } from '@/domain/receipt/ReceiptWarning'
-import { Direction } from '@/domain/spreadsheet/ColumnMapping'
-import { missingRequiredValues } from '@/domain/spreadsheet/ColumnMapping'
+import {
+  Direction,
+  mappedFields,
+  missingRequiredValues,
+} from '@/domain/spreadsheet/ColumnMapping'
+import { REQUIRED_GROUPS } from '@/domain/receipt/ReceiptFields'
 import {
   DuplicateLevel,
   addToIndex,
@@ -83,12 +87,20 @@ export function useFillRows() {
     fillRows.value.filter((row) => row.missing.length),
   )
 
+  const missingAssignments = computed(() => {
+    const available = new Set(mappedFields(mapping.value))
+    return REQUIRED_GROUPS.filter(
+      (group) => !group.some((field) => available.has(field)),
+    ).map((group) => group[0])
+  })
+
   const canFill = computed(
     () =>
-      template.isReady &&
+      template.isLoaded &&
+      missingAssignments.value.length === 0 &&
       fillRows.value.length > 0 &&
       blocked.value.length === 0,
   )
 
-  return { fillRows, blocked, canFill }
+  return { fillRows, blocked, missingAssignments, canFill }
 }

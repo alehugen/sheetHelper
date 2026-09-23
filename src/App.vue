@@ -55,13 +55,7 @@ const nav = computed(() => [
 
     <main class="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-6">
       <RouterView v-slot="{ Component }">
-        <Transition
-          enter-active-class="transition duration-200 ease-out"
-          enter-from-class="opacity-0 translate-y-1"
-          leave-active-class="transition duration-100 ease-in"
-          leave-to-class="opacity-0"
-          mode="out-in"
-        >
+        <Transition name="page" mode="out-in">
           <component :is="Component" />
         </Transition>
       </RouterView>

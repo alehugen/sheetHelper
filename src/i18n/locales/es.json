@@ -108,24 +108,23 @@
     "empty": "No se extrajo texto de este archivo."
   },
   "fill": {
-    "modeNew": "Crear una planilla nueva",
-    "modeFill": "Completar mi planilla",
     "dropTitle": "Suelta aquí la planilla que ya usas",
     "dropDescription": "archivo .xlsx — vuelve con las filas nuevas y nada más alterado",
     "loaded": "{sheets} hoja(s) · {rows} asientos ya registrados",
     "replace": "Cambiar planilla",
-    "mappingTitle": "Completando",
-    "untouched": "{count} columna(s) de tu planilla no serán tocadas",
-    "adjust": "ajustar",
-    "pendingTitle": "Falta indicar dónde va cada campo",
-    "pendingHint": "Lo defines una vez. En la próxima planilla igual, no pregunto.",
+    "goToFill": "Completar mi planilla",
+    "back": "Volver a la revisión",
+    "columnsTitle": "Columnas de tu planilla",
+    "columnsHint": "Elige qué completa cada columna. Lo que no elijas queda intacto.",
     "none": "dejar vacío",
-    "credit": "entrada",
-    "debit": "salida",
+    "formulaColumn": "tiene fórmula — no será tocada",
+    "amountIn": "Importe recibido",
+    "amountOut": "Importe pagado",
     "sheet": "Hoja",
     "targetRow": "Fila",
-    "button": "Completar planilla",
-    "needTemplate": "Primero suelta la planilla que será completada.",
-    "done": "Planilla completada con {count} asiento(s)."
+    "button": "Completar y descargar",
+    "done": "Planilla completada con {count} asiento(s).",
+    "missingRequired": "Falta indicar: {fields}",
+    "noRows": "Revisa los comprobantes antes de completar la planilla."
   }
 }

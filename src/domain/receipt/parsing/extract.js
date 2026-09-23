@@ -28,7 +28,7 @@ const BREAK_SPEC = { labels: SECTION_BREAKS }
 
 const MAX_DATE_DRIFT_DAYS = 1
 
-export function classify(text) {
+function classify(text) {
   const ranked = TYPE_KEYWORDS.map(([type, keywords]) => ({
     type,
     score: scoreKeywords(text, keywords),

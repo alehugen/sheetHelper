@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'ticketexport:mappings:v1'
+const STORAGE_KEY = 'ticketexport:mappings:v2'
 
 function safeParse(raw) {
   try {

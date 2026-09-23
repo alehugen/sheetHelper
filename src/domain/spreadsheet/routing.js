@@ -6,7 +6,7 @@ import { Direction } from './ColumnMapping.js'
 const MIN_TOKEN = 3
 const NOISE = new Set(['conta', 'banco', 'bco', 'ltda', 'sa', 'me', 'epp'])
 
-export function nameTokens(value) {
+function nameTokens(value) {
   return fold(value)
     .split(/[^a-z0-9]+/)
     .filter((token) => token.length >= MIN_TOKEN && !NOISE.has(token))

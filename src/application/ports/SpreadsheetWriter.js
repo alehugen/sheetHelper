@@ -3,7 +3,7 @@ export const SpreadsheetFormat = {
   CSV: 'csv',
 }
 
-export const SPREADSHEET_FORMATS = [
+const SPREADSHEET_FORMATS = [
   {
     id: SpreadsheetFormat.XLSX,
     label: 'Excel (.xlsx)',

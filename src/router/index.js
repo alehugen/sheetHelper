@@ -16,6 +16,12 @@ const routes = [
     meta: { titleKey: 'nav.review', requiresReceipts: true },
   },
   {
+    path: '/preencher',
+    name: 'fill',
+    component: () => import('@/presentation/views/FillView.vue'),
+    meta: { titleKey: 'fill.goToFill', requiresReceipts: true },
+  },
+  {
     path: '/historico',
     name: 'history',
     component: () => import('@/presentation/views/HistoryView.vue'),

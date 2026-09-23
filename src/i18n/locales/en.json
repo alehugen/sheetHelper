@@ -108,24 +108,23 @@
     "empty": "No text was extracted from this file."
   },
   "fill": {
-    "modeNew": "Create a new spreadsheet",
-    "modeFill": "Fill my spreadsheet",
     "dropTitle": "Drop the spreadsheet you already use",
     "dropDescription": ".xlsx file — it comes back with the new rows and nothing else changed",
     "loaded": "{sheets} sheet(s) · {rows} entries already recorded",
     "replace": "Replace spreadsheet",
-    "mappingTitle": "Filling",
-    "untouched": "{count} of your columns will not be touched",
-    "adjust": "adjust",
-    "pendingTitle": "Tell me where each field goes",
-    "pendingHint": "Set it once. For the same spreadsheet next time, I won't ask.",
+    "goToFill": "Fill my spreadsheet",
+    "back": "Back to review",
+    "columnsTitle": "Your spreadsheet columns",
+    "columnsHint": "Choose what fills each column. Anything you skip stays untouched.",
     "none": "leave empty",
-    "credit": "money in",
-    "debit": "money out",
+    "formulaColumn": "has a formula — will not be touched",
+    "amountIn": "Amount received",
+    "amountOut": "Amount paid",
     "sheet": "Sheet",
     "targetRow": "Row",
-    "button": "Fill spreadsheet",
-    "needTemplate": "Drop the spreadsheet to be filled first.",
-    "done": "Spreadsheet filled with {count} entries."
+    "button": "Fill and download",
+    "done": "Spreadsheet filled with {count} entries.",
+    "missingRequired": "Still to assign: {fields}",
+    "noRows": "Review the receipts before filling the spreadsheet."
   }
 }

@@ -13,7 +13,7 @@ const XLSX_MIME =
 export function useSpreadsheetFill() {
   const { t } = useI18n()
   const template = useTemplateStore()
-  const { fillRows, blocked, canFill } = useFillRows()
+  const { fillRows, blocked, missingAssignments, canFill } = useFillRows()
 
   const isFilling = ref(false)
   const error = ref(null)
@@ -45,5 +45,14 @@ export function useSpreadsheetFill() {
     }
   }
 
-  return { fillRows, blocked, canFill, isFilling, error, done, fill }
+  return {
+    fillRows,
+    blocked,
+    missingAssignments,
+    canFill,
+    isFilling,
+    error,
+    done,
+    fill,
+  }
 }

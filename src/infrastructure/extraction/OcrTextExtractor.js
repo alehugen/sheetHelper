@@ -21,7 +21,7 @@ async function getWorker(onStatus) {
   return workerPromise
 }
 
-export async function terminateOcr() {
+async function terminateOcr() {
   if (!workerPromise) return
   const worker = await workerPromise
   workerPromise = null

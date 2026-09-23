@@ -3,42 +3,30 @@ import { computed, ref } from 'vue'
 
 import { container } from '@/container'
 import {
-  autoMapping,
   fingerprintHeaders,
-  mergeMapping,
-  unresolvedFields,
+  mappingFromAssignments,
+  suggestAssignments,
 } from '@/domain/spreadsheet/ColumnMapping'
 
-export const FlowMode = {
-  NEW: 'new',
-  FILL: 'fill',
-}
-
 export const useTemplateStore = defineStore('template', () => {
-  const mode = ref(FlowMode.NEW)
   const fileName = ref(null)
   const bytes = ref(null)
   const sheets = ref([])
   const fingerprint = ref(null)
-  const auto = ref({ mapping: {}, ambiguous: {}, unmapped: [] })
-  const overrides = ref({})
+  const assignments = ref({})
   const error = ref(null)
 
   const isLoaded = computed(() => sheets.value.length > 0)
-
-  const mapping = computed(() =>
-    mergeMapping(auto.value.mapping, overrides.value),
-  )
-
-  const pendingFields = computed(() =>
-    unresolvedFields(mapping.value, auto.value.ambiguous),
-  )
-
-  const isReady = computed(
-    () => isLoaded.value && pendingFields.value.length === 0,
-  )
-
   const columns = computed(() => sheets.value[0]?.columns ?? [])
+  const mapping = computed(() => mappingFromAssignments(assignments.value))
+
+  const usedFields = computed(
+    () => new Set(Object.values(assignments.value).filter(Boolean)),
+  )
+
+  const totalRows = computed(() =>
+    sheets.value.reduce((sum, sheet) => sum + sheet.data.length, 0),
+  )
 
   async function load(file) {
     error.value = null
@@ -53,29 +41,29 @@ export const useTemplateStore = defineStore('template', () => {
       fileName.value = file.name
       sheets.value = result.sheets
       fingerprint.value = fingerprintHeaders(result.sheets[0].columns)
-      auto.value = autoMapping(result.sheets[0].columns)
-      overrides.value =
-        container.fillSpreadsheet.savedMapping(fingerprint.value) ?? {}
+
+      assignments.value =
+        container.fillSpreadsheet.savedMapping(fingerprint.value) ??
+        suggestAssignments(result.sheets[0].columns)
     } catch (cause) {
       error.value = cause?.message ?? 'Não foi possível ler a planilha.'
       reset()
     }
   }
 
-  function setTarget(field, target) {
-    overrides.value = target
-      ? { ...overrides.value, [field]: target }
-      : Object.fromEntries(
-          Object.entries(overrides.value).filter(([key]) => key !== field),
-        )
-  }
+  function assign(column, field) {
+    const next = { ...assignments.value }
 
-  function remember() {
+    for (const [key, value] of Object.entries(next)) {
+      if (value === field && key !== column) delete next[key]
+    }
+
+    if (field) next[column] = field
+    else delete next[column]
+
+    assignments.value = next
     if (fingerprint.value) {
-      container.fillSpreadsheet.rememberMapping(
-        fingerprint.value,
-        overrides.value,
-      )
+      container.fillSpreadsheet.rememberMapping(fingerprint.value, next)
     }
   }
 
@@ -84,27 +72,23 @@ export const useTemplateStore = defineStore('template', () => {
     bytes.value = null
     sheets.value = []
     fingerprint.value = null
-    auto.value = { mapping: {}, ambiguous: {}, unmapped: [] }
-    overrides.value = {}
+    assignments.value = {}
   }
 
   return {
-    mode,
     fileName,
     bytes,
     sheets,
     columns,
     fingerprint,
-    auto,
-    overrides,
+    assignments,
+    usedFields,
     mapping,
-    pendingFields,
+    totalRows,
     isLoaded,
-    isReady,
     error,
     load,
-    setTarget,
-    remember,
+    assign,
     reset,
   }
 })

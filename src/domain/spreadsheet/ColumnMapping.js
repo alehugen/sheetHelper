@@ -9,6 +9,9 @@ export const Direction = {
   DEBIT: 'debit',
 }
 
+export const AMOUNT_IN = 'amountIn'
+export const AMOUNT_OUT = 'amountOut'
+
 export function fingerprintHeaders(columns) {
   return columns
     .map(
@@ -18,34 +21,39 @@ export function fingerprintHeaders(columns) {
     .join('|')
 }
 
-export function autoMapping(columns) {
-  const { mapping, ambiguous, unmapped } = detectMapping(columns)
-
-  return {
-    mapping: Object.fromEntries(
-      Object.entries(mapping).map(([field, column]) => [
-        field,
-        { column: column.letter },
-      ]),
-    ),
-    ambiguous: Object.fromEntries(
-      Object.entries(ambiguous).map(([field, candidates]) => [
-        field,
-        candidates.map((candidate) => candidate.letter),
-      ]),
-    ),
-    unmapped: unmapped.map((column) => column.letter),
-  }
+export function suggestAssignments(columns) {
+  const { mapping } = detectMapping(columns)
+  return Object.fromEntries(
+    Object.entries(mapping)
+      .filter(([field]) => field !== 'amount')
+      .map(([field, column]) => [column.letter, field]),
+  )
 }
 
-export function mergeMapping(auto, saved = {}) {
-  return { ...auto, ...saved }
+export function mappingFromAssignments(assignments) {
+  const mapping = {}
+  const byDirection = {}
+
+  for (const [column, field] of Object.entries(assignments)) {
+    if (!field) continue
+    if (field === AMOUNT_IN) byDirection.credit = column
+    else if (field === AMOUNT_OUT) byDirection.debit = column
+    else mapping[field] = { column }
+  }
+
+  if (byDirection.credit || byDirection.debit) {
+    mapping.amount = { byDirection }
+  }
+  return mapping
 }
 
 export function targetColumn(target, direction = Direction.CREDIT) {
   if (!target) return null
   if (target.column) return target.column
-  return target.byDirection?.[direction] ?? null
+
+  const other =
+    direction === Direction.CREDIT ? Direction.DEBIT : Direction.CREDIT
+  return target.byDirection?.[direction] ?? target.byDirection?.[other] ?? null
 }
 
 export function mappedFields(mapping) {
@@ -55,7 +63,7 @@ export function mappedFields(mapping) {
   })
 }
 
-export function requiredFieldsFor(mapping) {
+function requiredFieldsFor(mapping) {
   const available = new Set(mappedFields(mapping))
   return REQUIRED_GROUPS.filter((group) =>
     group.some((field) => available.has(field)),
@@ -66,9 +74,4 @@ export function missingRequiredValues(receipt, mapping) {
   return requiredFieldsFor(mapping)
     .filter((group) => group.every((field) => isEmpty(receipt?.[field])))
     .map((group) => group[0])
-}
-
-export function unresolvedFields(mapping, ambiguous) {
-  const available = new Set(mappedFields(mapping))
-  return Object.keys(ambiguous).filter((field) => !available.has(field))
 }
