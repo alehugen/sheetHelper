@@ -1,8 +1,8 @@
 <h1 align="center">sheetHelper</h1>
 
 <p align="center">
-  Comprovantes e extratos bancários viram linhas na sua planilha financeira —
-  sem que nenhum arquivo saia do seu navegador.
+  Comprovantes e extratos bancários viram linhas na sua planilha financeira e um
+  painel exportável em PDF — sem que nenhum arquivo saia do seu navegador.
 </p>
 
 <p align="center">
@@ -28,18 +28,21 @@ o mesmo arquivo com as linhas novas e absolutamente nada mais alterado.
 ①  Comprovantes  →  ②  Conferência  →  ③  Planilha
    PDF, foto          corrija o que      baixe uma nova
    ou extrato         foi lido           ou preencha a sua
+                                      ↘  ③' Painel
+                                         gráficos e PDF
 ```
 
 Cada passo depende do anterior, e dá para voltar a qualquer momento sem perder
 nada. No passo 3 você escolhe entre baixar um `.xlsx`/`.csv` novo ou subir a
-planilha que já mantém e deixar o app completá-la.
+planilha que já mantém e deixar o app completá-la. Com os mesmos dados já lidos,
+o **painel** monta gráficos de entradas e saídas e exporta em PDF.
 
 ## O que ele faz
 
 - Lê **PDF do banco, foto e print** de comprovante de Pix, TED e boleto
 - Lê **extrato de conta corrente**, virando uma linha por lançamento — um PDF
   com 150 Pix recebidos vira 150 linhas de uma vez
-- Extrai 14 campos. Os três primeiros da planilha são os que mais importam na
+- Extrai 16 campos. Os três primeiros da planilha são os que mais importam na
   conciliação — **data, valor e remetente** — e são também os únicos tratados
   como obrigatórios
 - Mostra tudo numa **tabela editável** antes de exportar, com o comprovante
@@ -48,6 +51,10 @@ planilha que já mantém e deixar o app completá-la.
   todo o resto do arquivo
 - Avisa quando um lançamento **já existe** na sua planilha
 - Guarda as **3 últimas planilhas geradas** para baixar de novo
+- Monta um **painel com gráficos** dos mesmos lançamentos — entradas e saídas no
+  tempo, por tipo de pagamento e valor final por conta — **exportável em PDF**
+- Descobre **quem é você** nos documentos a partir do seu CNPJ e do nome da
+  empresa, para saber o que é entrada e o que é saída
 - **3 idiomas** (pt-BR, English, Español), **2 moedas** (BRL, USD com conversão
   real) e tema claro/escuro — tudo salvo no navegador
 
@@ -62,6 +69,7 @@ Requer Node 20.19+ ou 22.12+ (exigência do Vite 8). Não há backend, banco, ne
 variável de ambiente.
 
 ```bash
+npm test           # 159 testes (Vitest)
 npm run build      # build de produção
 npm run format     # prettier
 ```
@@ -131,7 +139,7 @@ de um parágrafo quebrado criava uma seção de pagador fantasma.
 ## Motor de rótulos
 
 A extração casa rótulos ancorados no início da linha
-([`labels.js`](src/domain/receipt/parsing/labels.js)). Três regras que não são
+([`matching.js`](src/domain/shared/matching.js)). Três regras que não são
 óbvias até quebrarem:
 
 - **Fronteira de palavra obrigatória.** O rótulo `banco` não pode casar dentro
@@ -248,8 +256,8 @@ Contra os lançamentos já existentes **e** dentro do próprio lote:
 - **Duplicata** — mesmo identificador, ou mesma data, valor e pagador
 - **Possível duplicata** — mesma data e valor, pagador diferente
 
-O nome é comparado com tolerância a truncamento (`L H DAVID` casa com
-`L H DAVID INTERMEDIACOES LTDA`), porque planilha real corta nome.
+O nome é comparado com tolerância a truncamento (`ALPHA` casa com
+`ALPHA INTERMEDIACOES LTDA`), porque planilha real corta nome.
 
 Medindo numa planilha de 2.121 lançamentos, **16% das linhas colidem entre si só
 por data e valor** — por isso o nome não é opcional no critério. Sem ele, um em
@@ -270,19 +278,137 @@ Ambos são palpites com correção manual: cada linha tem um seletor de aba.
 
 ---
 
+# Parte 3 — Painel
+
+Com os lançamentos já lidos, o painel responde três perguntas e exporta em PDF.
+Nada de novo é processado: são os mesmos dados da conferência, agregados.
+
+## O problema de saber quem é você
+
+Um comprovante tem dois lados. Para dizer se R$ 7.047 foi **entrada** ou
+**saída**, é preciso saber qual dos dois lados é você — e o documento não diz.
+Pior: a mesma empresa aparece de formas diferentes conforme o arquivo.
+
+| Onde                 | Como ela aparece                                |
+| -------------------- | ----------------------------------------------- |
+| Comprovante de Pix   | nome completo + CNPJ                            |
+| Comprovante de outro | nome completo + CNPJ **mascarado**              |
+| Extrato do banco     | nome **truncado**, sem CNPJ, só agência e conta |
+
+Não existe campo em comum entre as três. Deduzir que `ACME S F D LTDA` e
+`ACME SOLUCOES FINANCEIRAS E` são a mesma empresa seria exatamente o tipo de
+suposição que este projeto evita — o app automatiza digitação, não julgamento.
+
+## A solução: dois campos que filtram
+
+Em vez de adivinhar, o app pergunta. Dois campos filtram enquanto você digita, e
+a lista abaixo mostra só as partes que combinam:
+
+```
+CNPJ ou CPF  [22.333.444/0001-81]        Nome da empresa  [ACME]
+                                                            ↓
+☑ ACME SOLUCOES FINANCEIRAS E   reconhecida    22.333.444/0001-81 · *****4440001**
+☑ ACME S F D LTDA                              BANCO DO BRASIL · 1234-5 / 67890-1
+☐ BETA CONSULTING LTDA                         33.444.555/0001-81
+```
+
+O campo de CNPJ tem máscara progressiva e filtra a partir do segundo dígito. O de
+nome casa por início de qualquer palavra, então `ACM` já reduz a lista.
+
+A diferença entre os dois é de natureza, não de grau:
+
+- **CNPJ completo marca sozinho**, porque conferir um documento é verificação,
+  não palpite — inclusive contra os **mascarados**, já que uma máscara revela
+  dígitos suficientes para confirmar ou descartar um candidato.
+- **Nome apenas filtra.** Quem marca é você. É o que resolve o caso do extrato
+  truncado, que nenhuma dedução alcançaria.
+
+## A escada de confiança
+
+Com as contas marcadas, cada lançamento é classificado pelo degrau mais forte
+disponível ([`direction.js`](src/domain/identity/direction.js)):
+
+| Degrau     | Como casa                        |
+| ---------- | -------------------------------- |
+| `document` | CNPJ/CPF completo                |
+| `masked`   | mascarado conferido contra o seu |
+| `account`  | banco + agência/conta            |
+| `name`     | nome, como último recurso        |
+
+O painel mostra o placar — _"1 pelo documento · 1 pelo mascarado · 3 pela
+conta"_ — porque num app que promete não supor, saber **por que** cada linha foi
+classificada é o que permite conferir.
+
+Linha em que você não é parte fica **indefinida de propósito** e sai de todos os
+gráficos, contada à parte. Não é falha: é a resposta certa para o comprovante de
+outra empresa que entrou no lote.
+
+## Os gráficos
+
+Três, deliberadamente:
+
+| Gráfico                    | Forma             | O que responde                      |
+| -------------------------- | ----------------- | ----------------------------------- |
+| Entradas e saídas no tempo | área, duas séries | como o dinheiro se moveu no período |
+| Por tipo de pagamento      | barra vertical    | quanto passou por Pix, TED, boleto  |
+| Valor final por conta      | barra horizontal  | entradas menos saídas em cada conta |
+
+Cada um liga e desliga por um menu, e a escolha fica salva. Comprovante e extrato
+trazem pouca informação: um ranking de contrapartes com 86 nomes vindos de OCR
+diz menos do que aparenta, e foi removido por isso.
+
+**O eixo de tempo é contínuo.** Períodos sem movimento entram como zero, senão
+duas datas distantes virariam colunas vizinhas e o gráfico mentiria sobre o
+ritmo. Acima de 31 dias a unidade vira mês.
+
+**Nada some em silêncio.** Lançamento sem conta identificada vira um balde
+visível em vez de ser descartado — a soma de cada gráfico bate com os cartões de
+número, e isso é verificado por teste.
+
+## A paleta foi medida, não escolhida
+
+As cores passaram pelo validador de contraste e daltonismo do
+[skill de dataviz](https://github.com/anthropics/skills). Dois resultados
+mudaram o desenho:
+
+- **Verde e vermelho reprovaram** para entrada e saída (ΔE 5,1 em deuteranopia,
+  abaixo do piso 6,0). O par virou **azul e laranja**, que passa com ΔE 22,3.
+- **Nenhuma paleta de 4 cores passa** quando todas as categorias podem aparecer
+  lado a lado — nem a de referência do próprio skill. Por isso não há pizza,
+  rosca nem dispersão: só barra e linha, com ordem fixa e rótulo direto.
+
+Azul e laranja significam **sempre** entrada e saída; as categóricas nunca usam
+esses tons, para a mesma cor não querer dizer duas coisas na mesma página. Os
+tokens ficam em [`main.css`](src/assets/styles/main.css) e trocam sozinhos no
+tema escuro.
+
+## Exportar em PDF
+
+O botão abre o diálogo de impressão do navegador — sem biblioteca de PDF, sem
+servidor. A folha de impressão esconde a navegação, evita quebra no meio dos
+cartões e **força o tema claro**, porque painel escuro impresso gasta tinta e sai
+ilegível. O PDF ganha um cabeçalho que a tela não mostra: o período coberto e as
+identidades selecionadas, para o arquivo dizer de quem é e de quando.
+
+---
+
 ## Arquitetura
 
 ```
 src/
 ├── domain/            regras de negócio puras (JS, sem Vue, sem libs de UI)
-│   ├── shared/        dinheiro, data, CPF/CNPJ, texto, moeda, bancos
+│   ├── shared/        dinheiro, data, CPF/CNPJ, texto, casamento de rótulos, bancos
 │   ├── receipt/       entidade, campos, extrator e parsers de extrato
+│   ├── identity/      quem é você nos documentos: partes, mascarados, sentido
+│   ├── insights/      agregações do painel
 │   └── spreadsheet/   mapeamento de colunas, duplicatas, roteamento, posicionamento
 ├── application/       casos de uso e portas (contratos)
 ├── infrastructure/    adaptadores: pdf.js, tesseract, xlsx, csv, câmbio, storage
 ├── presentation/      Vue: design system, views, stores, composables
 ├── i18n/              um arquivo JSON por idioma
 └── container.js       composition root — onde tudo é ligado
+
+tests/                 espelha src/, com fixtures fictícias
 ```
 
 A regra de dependência é única: as setas apontam para dentro.
@@ -290,8 +416,13 @@ A regra de dependência é única: as setas apontam para dentro.
 O domínio não conhece ninguém.
 
 Na prática isso significa que o domínio roda no Node puro, sem bundler e sem
-browser — os parsers foram desenvolvidos e testados assim, rodando direto contra
-o texto de comprovantes reais.
+browser. Entre módulos do domínio o grafo é acíclico: `identity`, `insights` e
+`receipt` dependem só de `shared`, e `spreadsheet` depende de `receipt` porque
+mapeia campos de comprovante em colunas.
+
+O `container.js` é o único lugar que conhece implementações concretas — o mesmo
+papel de um arquivo de injeção de dependência numa API, só que escrito à mão, sem
+reflexão e sem escopos, porque aqui é uma aba do navegador e um usuário por vez.
 
 ## Pontos de extensão
 
@@ -362,6 +493,8 @@ e exportação, nunca o dado.
 |                                     |                                                    |
 | ----------------------------------- | -------------------------------------------------- |
 | Vue 3 + Vite                        | `<script setup>`, code splitting por rota          |
+| Vitest + happy-dom                  | 159 testes de domínio, store e helpers             |
+| Unovis                              | gráficos do painel (área e barra)                  |
 | Pinia + Vue Router                  | estado compartilhado e navegação em passos         |
 | Tailwind CSS v4                     | tema em CSS via `@theme`, sem `tailwind.config.js` |
 | pdfjs-dist                          | leitura de PDF e rasterização                      |
@@ -371,8 +504,10 @@ e exportação, nunca o dado.
 | vue-i18n, vue-currency-input        | idioma e máscara de moeda                          |
 | boletos-desc-br, cpf-cnpj-validator | validação de boleto e de documento                 |
 
-O carregamento inicial é ~47 kB gzip. pdf.js (129 kB), tesseract e o gerador de
-planilha só são baixados quando alguém envia um arquivo ou exporta.
+O carregamento inicial é ~111 kB gzip — Vue, router, Pinia, i18n, o domínio e o
+design system. Tudo o mais é sob demanda: pdf.js (124 kB), o painel com o Unovis
+(72 kB), o OCR e o gerador de planilha só descem quando alguém envia um arquivo,
+abre o painel ou exporta.
 
 ### Por que essas bibliotecas
 
@@ -386,6 +521,12 @@ planilha só são baixados quando alguém envia um arquivo ou exporta.
   completo, mas arrasta `moment-timezone` (~200 kB).
 - **CSV escrito à mão.** Separador `;` e BOM UTF-8, que é o que o Excel em
   português espera.
+- **Unovis nos gráficos, mesmo custando mais.** Os gráficos existiram primeiro
+  em HTML e CSS puros, e pesavam 7,8 kB contra 55,7 kB de um único gráfico da
+  biblioteca. Ainda assim a biblioteca venceu: gráfico é peça padrão, e código
+  próprio para desenhá-la cobra manutenção para sempre. A conta de bytes vale
+  para lógica de domínio, não para componente que o mercado já resolveu. As
+  cores continuam saindo dos tokens CSS, então o tema escuro troca sozinho.
 
 ## Decisões técnicas
 
@@ -405,6 +546,44 @@ planilha só são baixados quando alguém envia um arquivo ou exporta.
   rótulo `CPF:` é mantido mesmo se o dígito verificador falhar, porque o OCR pode
   ter trocado um número e o usuário corrige na revisão.
 
+## Testes
+
+```bash
+npm test
+```
+
+159 testes em 12 arquivos, rodando em ~1 s. Vitest reaproveita o `vite.config.js`,
+então os aliases `@/` valem sem configuração paralela.
+
+A cobertura não é uniforme de propósito — os testes miram onde já houve
+regressão de verdade:
+
+| Área                 | O que está travado                                                                  |
+| -------------------- | ----------------------------------------------------------------------------------- |
+| Casamento de rótulos | `data de` não é truncamento de `data de vencimento`; `banco` não casa em `UNIBANCO` |
+| Extração             | os cinco documentos de exemplo, campo a campo                                       |
+| Identidade           | mascarado confere; nome truncado do extrato não funde sozinho; chaves estáveis      |
+| Agregações           | os gráficos somam o mesmo total dos cartões de número                               |
+| Planilha             | duplicata por identificador, por data+valor e por prefixo de nome                   |
+| Painel               | filtro ao vivo, marcação só com documento completo, memória entre visitas           |
+
+Três testes travam o **formato** dos objetos de agregação: se alguém acrescentar
+um campo que ninguém lê, o teste reclama em vez de deixar apodrecer.
+
+### As fixtures são fictícias
+
+[`tests/fixtures/receipts.js`](tests/fixtures/receipts.js) não contém nenhum dado
+real. O que foi preservado é a **estrutura** — ordem das linhas, redação dos
+rótulos, onde o rodapé começa, agência e conta ora juntas ora separadas, o
+formato do identificador Pix. Nomes, documentos, contas e identificadores são
+inventados: os CNPJs têm dígito verificador válido, e cada máscara foi derivada
+do CNPJ falso que ela deve casar — senão o teste de documento mascarado não
+provaria nada.
+
+Nomes de instituição (`BCO DO BRASIL S.A`, `Nu Pagamentos S.A.`) são mantidos de
+propósito, porque o extrator casa neles para achar o rodapé e identificar o
+banco.
+
 ## Limitações conhecidas
 
 - OCR de foto erra dígitos. Identificadores longos são os mais afetados — por
@@ -416,9 +595,15 @@ planilha só são baixados quando alguém envia um arquivo ou exporta.
 - A cotação vem de uma API pública sem chave, com cache de 6 horas. Se ela cair,
   os valores continuam em reais e a interface avisa.
 - O primeiro OCR baixa ~2 MB de modelo de idioma do CDN.
-- Não há testes automatizados. A verificação foi feita rodando domínio,
-  infraestrutura e composables no Node contra arquivos reais, e inspecionando o
-  XML do `.xlsx` gerado célula a célula.
+- **Os gráficos não têm teste de renderização.** O Unovis mede o contêiner pelo
+  navegador e não desenha sem layout real, então o que os testes garantem é que
+  montam sem erro — não que desenham certo. Isso continua sendo verificação
+  manual.
+- **O escritor de `.xlsx` também não.** É o ponto mais crítico do sistema e
+  precisaria de uma planilha de exemplo para um teste de ponta a ponta que leia,
+  preencha e confira célula a célula. Hoje a garantia vem do próprio escritor,
+  que relê o arquivo produzido e recusa a operação se algo além das células
+  preenchidas mudou.
 
 ## Autor
 

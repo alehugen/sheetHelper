@@ -9,7 +9,7 @@ import { ReceiptWarning } from '../ReceiptWarning.js'
 import { detectStatement } from '../statements/index.js'
 
 import { extractReceipt } from './extract.js'
-import { splitBody, toLines } from './labels.js'
+import { splitBody, toLines } from './lines.js'
 
 function confidenceOf(receipt, score) {
   const fillable = RECEIPT_FIELDS.length - 1

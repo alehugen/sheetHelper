@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { Orientation } from '@unovis/ts'
 import { useI18n } from 'vue-i18n'
 
-import { byOwnAccount, byType } from '@/domain/insights/aggregate'
+import { byOwnAccount, byType, dateRange } from '@/domain/insights/aggregate'
 import RankChart from '@/presentation/components/dashboard/RankChart.vue'
 import ChartMenu from '@/presentation/components/dashboard/ChartMenu.vue'
 import FlowChart from '@/presentation/components/dashboard/FlowChart.vue'
@@ -66,14 +66,11 @@ const accounts = computed(() =>
 )
 
 const period = computed(() => {
-  const dates = entries.value
-    .map((entry) => entry.receipt.date)
-    .filter(Boolean)
-    .sort()
-  if (!dates.length) return null
+  const range = dateRange(entries.value)
+  if (!range) return null
   const format = new Intl.DateTimeFormat(locale.value, { dateStyle: 'medium' })
-  const first = format.format(new Date(`${dates[0]}T12:00:00`))
-  const last = format.format(new Date(`${dates.at(-1)}T12:00:00`))
+  const first = format.format(new Date(`${range.first}T12:00:00`))
+  const last = format.format(new Date(`${range.last}T12:00:00`))
   return first === last ? first : `${first} — ${last}`
 })
 

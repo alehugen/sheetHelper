@@ -7,17 +7,16 @@ import { ReceiptWarning } from '../ReceiptWarning.js'
 import { codeAgreesWithAmount, describeBoletoCode } from '../boletoCode.js'
 import { daysApart, describePixId } from '../pixId.js'
 
+import { scoreKeywords } from '../../shared/matching.js'
+
 import {
   PATTERNS,
-  findFirst,
-  findLabeled,
   extractAccount,
+  findLabeled,
   findLabeledDigits,
   guessName,
-  scoreKeywords,
-  sectionHeaderValue,
-  sliceSection,
-} from './labels.js'
+} from './fields.js'
+import { findFirst, sectionHeaderValue, sliceSection } from './sections.js'
 import {
   FIELD_LABELS,
   SECTION_BREAKS,

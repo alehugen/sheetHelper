@@ -4,7 +4,8 @@ import { parseAmount } from '../../shared/money.js'
 import { onlyDigits, upperCase } from '../../shared/text.js'
 import { createReceipt } from '../Receipt.js'
 import { ReceiptType } from '../ReceiptType.js'
-import { extractAccount, scoreKeywords } from '../parsing/labels.js'
+import { scoreKeywords } from '../../shared/matching.js'
+import { extractAccount } from '../parsing/fields.js'
 
 const KEYWORDS = [
   ['extrato de conta corrente', 4],

@@ -1,4 +1,4 @@
-import { labelAt } from '../receipt/parsing/labels.js'
+import { labelAt } from '../shared/matching.js'
 
 export const HEADER_VOCABULARY = {
   date: [

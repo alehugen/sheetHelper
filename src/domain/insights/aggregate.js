@@ -42,13 +42,19 @@ export function summarize(entries) {
   }
 }
 
-export function suggestUnit(entries) {
+export function dateRange(entries) {
   const dates = entries
     .map((entry) => entry.receipt?.date)
     .filter(Boolean)
     .sort()
-  if (dates.length < 2) return 'day'
-  const span = (Date.parse(dates.at(-1)) - Date.parse(dates[0])) / DAY_MS
+  if (!dates.length) return null
+  return { first: dates[0], last: dates.at(-1) }
+}
+
+export function suggestUnit(entries) {
+  const range = dateRange(entries)
+  if (!range || range.first === range.last) return 'day'
+  const span = (Date.parse(range.last) - Date.parse(range.first)) / DAY_MS
   return span > MONTH_THRESHOLD_DAYS ? 'month' : 'day'
 }
 

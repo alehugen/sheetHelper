@@ -56,7 +56,7 @@ function nameOf(item) {
   return item?.label ?? props.emptyLabel
 }
 
-function labelAt(value) {
+function categoryAt(value) {
   if (!Number.isInteger(value)) return ''
   const item = props.items[value]
   if (!item) return ''
@@ -87,7 +87,7 @@ const triggers = computed(() => ({
       />
       <VisAxis
         :type="isHorizontal ? 'y' : 'x'"
-        :tick-format="labelAt"
+        :tick-format="categoryAt"
         :tick-values="tickValues"
         :grid-line="false"
         :domain-line="false"
