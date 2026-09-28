@@ -148,7 +148,6 @@ export const useReceiptsStore = defineStore('receipts', () => {
   return {
     jobs,
     isRunning,
-    readyJobs,
     failedJobs,
     pendingJobs,
     rows,

@@ -6,7 +6,6 @@ const DAY_MS = 86400000
 const MONTH_THRESHOLD_DAYS = 31
 const MAX_PERIODS = 400
 const UNKNOWN = '__unknown__'
-const OTHER = '__other__'
 
 function amountOf(entry) {
   const value = Number(entry.receipt?.amount)
@@ -25,10 +24,6 @@ function ownSide(entry) {
   return entry.direction === Direction.DEBIT ? 'payer' : 'payee'
 }
 
-function counterSide(entry) {
-  return entry.direction === Direction.DEBIT ? 'payee' : 'payer'
-}
-
 export function summarize(entries) {
   const usable = resolved(entries)
   const credit = usable
@@ -43,7 +38,6 @@ export function summarize(entries) {
     debit,
     net: credit - debit,
     count: usable.length,
-    average: usable.length ? (credit + debit) / usable.length : 0,
     skipped: entries.length - usable.length,
   }
 }
@@ -92,18 +86,17 @@ export function byPeriod(entries, unit = 'day') {
     const key = unit === 'month' ? date.slice(0, 7) : date
 
     if (!buckets.has(key))
-      buckets.set(key, { key, credit: 0, debit: 0, net: 0, count: 0 })
+      buckets.set(key, { key, credit: 0, debit: 0, net: 0 })
     const bucket = buckets.get(key)
     const amount = amountOf(entry)
     if (entry.direction === Direction.CREDIT) bucket.credit += amount
     else bucket.debit += amount
     bucket.net = bucket.credit - bucket.debit
-    bucket.count += 1
   }
 
   for (const key of periodRange([...buckets.keys()], unit)) {
     if (!buckets.has(key)) {
-      buckets.set(key, { key, credit: 0, debit: 0, net: 0, count: 0 })
+      buckets.set(key, { key, credit: 0, debit: 0, net: 0 })
     }
   }
 
@@ -117,47 +110,15 @@ function group(entries, keyOf, labelOf = (key) => key) {
     const key = keyOf(entry) || UNKNOWN
     if (!buckets.has(key)) {
       const label = key === UNKNOWN ? null : labelOf(key, entry)
-      buckets.set(key, { key, label, total: 0, credit: 0, debit: 0, count: 0 })
+      buckets.set(key, { key, label, total: 0, net: 0 })
     }
     const bucket = buckets.get(key)
     const amount = amountOf(entry)
     bucket.total += amount
-    bucket[entry.direction === Direction.CREDIT ? 'credit' : 'debit'] += amount
-    bucket.count += 1
+    bucket.net += entry.direction === Direction.CREDIT ? amount : -amount
   }
 
   return [...buckets.values()].sort((a, b) => b.total - a.total)
-}
-
-function counterpartyOf(entry) {
-  return entry.receipt?.[`${counterSide(entry)}Name`] ?? null
-}
-
-function rankCounterparties(entries) {
-  return group(
-    entries,
-    (entry) => normalizeName(counterpartyOf(entry)),
-    (_, entry) => counterpartyOf(entry),
-  )
-}
-
-export function topCounterparties(entries, { limit = 8 } = {}) {
-  const ranked = rankCounterparties(entries)
-  if (ranked.length <= limit) return ranked
-
-  const tail = ranked.slice(limit)
-  return [
-    ...ranked.slice(0, limit),
-    {
-      key: OTHER,
-      label: null,
-      isOther: true,
-      total: tail.reduce((sum, item) => sum + item.total, 0),
-      credit: tail.reduce((sum, item) => sum + item.credit, 0),
-      debit: tail.reduce((sum, item) => sum + item.debit, 0),
-      count: tail.reduce((sum, item) => sum + item.count, 0),
-    },
-  ]
 }
 
 export function byType(entries) {
@@ -185,19 +146,4 @@ export function byOwnAccount(entries) {
       }
     },
   )
-}
-
-export function concentration(entries, { top = 5 } = {}) {
-  const ranked = rankCounterparties(entries)
-  const named = ranked.filter((item) => item.key !== UNKNOWN)
-  const total = ranked.reduce((sum, item) => sum + item.total, 0)
-  const head = named.slice(0, top).reduce((sum, item) => sum + item.total, 0)
-
-  return {
-    top,
-    parties: named.length,
-    unnamed: ranked.length - named.length,
-    total,
-    share: total ? head / total : 0,
-  }
 }

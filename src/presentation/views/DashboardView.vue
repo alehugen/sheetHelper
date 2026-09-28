@@ -1,27 +1,26 @@
 <script setup>
 import { computed } from 'vue'
+import { Orientation } from '@unovis/ts'
 import { useI18n } from 'vue-i18n'
 
-import {
-  byOwnAccount,
-  byType,
-  concentration,
-  topCounterparties,
-} from '@/domain/insights/aggregate'
-import BarList from '@/presentation/components/dashboard/BarList.vue'
-import ChartToggles from '@/presentation/components/dashboard/ChartToggles.vue'
+import { byOwnAccount, byType } from '@/domain/insights/aggregate'
+import RankChart from '@/presentation/components/dashboard/RankChart.vue'
+import ChartMenu from '@/presentation/components/dashboard/ChartMenu.vue'
 import FlowChart from '@/presentation/components/dashboard/FlowChart.vue'
 import IdentityPanel from '@/presentation/components/dashboard/IdentityPanel.vue'
 import KpiTiles from '@/presentation/components/dashboard/KpiTiles.vue'
 import AppButton from '@/presentation/components/ui/AppButton.vue'
 import AppCard from '@/presentation/components/ui/AppCard.vue'
-import AppEmptyState from '@/presentation/components/ui/AppEmptyState.vue'
 import { useReceiptFormat } from '@/presentation/composables/useReceiptFormat'
 import { useDashboardStore } from '@/presentation/stores/dashboard'
 import { useIdentityStore } from '@/presentation/stores/identity'
 
-const CATEGORICAL = ['bg-chart-1', 'bg-chart-2', 'bg-chart-3', 'bg-chart-4']
-const TOP_PARTIES = 5
+const CATEGORICAL = [
+  'var(--color-chart-1)',
+  'var(--color-chart-2)',
+  'var(--color-chart-3)',
+  'var(--color-chart-4)',
+]
 
 const { t } = useI18n()
 const { money, translateType, locale } = useReceiptFormat()
@@ -30,17 +29,18 @@ const dashboard = useDashboardStore()
 
 const entries = computed(() => identity.entries)
 
-const counterparties = computed(() =>
-  topCounterparties(entries.value, { limit: 8 }).map((item) => ({
-    key: item.key,
-    label: item.isOther ? t('dashboard.other') : item.label,
-    value: item.total,
-    segments: [
-      { key: `${item.key}:in`, value: item.credit, color: 'bg-chart-in' },
-      { key: `${item.key}:out`, value: item.debit, color: 'bg-chart-out' },
-    ],
-  })),
-)
+const flowSeries = computed(() => [
+  {
+    key: 'credit',
+    label: t('dashboard.kpi.in'),
+    color: 'var(--color-chart-in)',
+  },
+  {
+    key: 'debit',
+    label: t('dashboard.kpi.out'),
+    color: 'var(--color-chart-out)',
+  },
+])
 
 const types = computed(() =>
   byType(entries.value).map((item, index) => ({
@@ -57,12 +57,13 @@ const accounts = computed(() =>
     label: item.label
       ? [item.label.bank, item.label.account].filter(Boolean).join(' · ')
       : null,
-    value: item.total,
-    color: CATEGORICAL[index % CATEGORICAL.length],
+    value: item.net,
+    color:
+      item.net < 0
+        ? 'var(--color-chart-out)'
+        : CATEGORICAL[index % CATEGORICAL.length],
   })),
 )
-
-const focus = computed(() => concentration(entries.value, { top: TOP_PARTIES }))
 
 const period = computed(() => {
   const dates = entries.value
@@ -79,20 +80,12 @@ const period = computed(() => {
 function exportPdf() {
   window.print()
 }
-
-const percent = computed(
-  () =>
-    new Intl.NumberFormat(locale.value, {
-      style: 'percent',
-      maximumFractionDigits: 0,
-    }),
-)
 </script>
 
 <template>
   <div class="space-y-6">
     <header class="flex flex-wrap items-start justify-between gap-4">
-      <div>
+      <div class="min-w-0">
         <h1 class="text-title text-xl font-semibold tracking-tight">
           {{ t('dashboard.title') }}
         </h1>
@@ -110,22 +103,22 @@ const percent = computed(
         </p>
       </div>
 
-      <AppButton
-        v-if="identity.isReady"
-        variant="secondary"
-        size="sm"
-        class="print:hidden"
-        @click="exportPdf"
-      >
-        {{ t('dashboard.export') }}
-      </AppButton>
+      <div v-if="identity.isReady" class="flex shrink-0 items-center gap-2">
+        <ChartMenu />
+        <AppButton
+          variant="secondary"
+          size="sm"
+          class="print:hidden"
+          @click="exportPdf"
+        >
+          {{ t('dashboard.export') }}
+        </AppButton>
+      </div>
     </header>
 
-    <IdentityPanel class="print:hidden" />
+    <IdentityPanel />
 
     <template v-if="identity.isReady">
-      <ChartToggles />
-
       <KpiTiles :entries="entries" />
 
       <AppCard
@@ -133,19 +126,7 @@ const percent = computed(
         :title="t('dashboard.flow.title')"
         :description="t('dashboard.flow.hint')"
       >
-        <FlowChart :entries="entries" />
-      </AppCard>
-
-      <AppCard
-        v-if="dashboard.shows('counterparties')"
-        :title="t('dashboard.charts.counterparties')"
-        :description="t('dashboard.counterparties.hint')"
-      >
-        <BarList
-          :items="counterparties"
-          :format="money"
-          :empty-label="t('dashboard.unknownParty')"
-        />
+        <FlowChart :entries="entries" :series="flowSeries" />
       </AppCard>
 
       <div class="grid gap-6 lg:grid-cols-2">
@@ -153,9 +134,10 @@ const percent = computed(
           v-if="dashboard.shows('types')"
           :title="t('dashboard.charts.types')"
         >
-          <BarList
+          <RankChart
             :items="types"
             :format="money"
+            :orientation="Orientation.Vertical"
             :empty-label="t('dashboard.unknownType')"
           />
         </AppCard>
@@ -165,41 +147,13 @@ const percent = computed(
           :title="t('dashboard.charts.accounts')"
           :description="t('dashboard.accounts.hint')"
         >
-          <BarList
+          <RankChart
             :items="accounts"
             :format="money"
             :empty-label="t('dashboard.unknownAccount')"
           />
         </AppCard>
       </div>
-
-      <AppCard
-        v-if="dashboard.shows('concentration') && focus.parties"
-        :title="t('dashboard.charts.concentration')"
-      >
-        <p
-          class="text-title text-2xl font-semibold tracking-tight tabular-nums"
-        >
-          {{ percent.format(focus.share) }}
-        </p>
-        <p class="text-muted mt-1 text-sm">
-          {{
-            t('dashboard.concentration.body', {
-              top: Math.min(focus.top, focus.parties),
-              parties: focus.parties,
-            })
-          }}
-        </p>
-        <p v-if="focus.unnamed" class="text-subtle mt-2 text-xs">
-          {{ t('dashboard.concentration.unnamed', { count: focus.unnamed }) }}
-        </p>
-      </AppCard>
     </template>
-
-    <AppEmptyState
-      v-else
-      :title="t('dashboard.empty.title')"
-      :description="t('dashboard.empty.hint')"
-    />
   </div>
 </template>

@@ -10,6 +10,8 @@
     "format": "prettier --write \"src/**/*.{js,vue,css}\""
   },
   "dependencies": {
+    "@unovis/ts": "^1.7.0",
+    "@unovis/vue": "^1.7.0",
     "@vueuse/core": "^15.0.0",
     "boletos-desc-br": "^3.0.0",
     "cpf-cnpj-validator": "^2.1.2",

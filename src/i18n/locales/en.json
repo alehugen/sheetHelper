@@ -148,16 +148,22 @@
     "subtitle": "An overview of the receipts and statements you uploaded, ready to export as PDF.",
     "identity": {
       "title": "Who you are in these documents",
-      "hint": "Enter your tax ID and tick the accounts that are yours. That is how we tell money in from money out.",
-      "placeholder": "Tax ID",
-      "add": "Add",
-      "invalid": "Invalid or already added.",
-      "remove": "Remove document",
+      "hint": "Type the tax ID and the company name to filter the parties found in the documents. The tax ID is checked even when it comes masked.",
+      "placeholder": "00.000.000/0000-00",
       "pick": "Tick the parties that are you. Those matching your tax ID are already ticked.",
       "matched": "matched",
       "counts": "{rows} row(s) · paid {payer} · received {payee}",
       "matchedBy": "How we matched your rows:",
-      "unresolved": "{count} left out (you are not a party)"
+      "unresolved": "{count} left out (you are not a party)",
+      "summary": "{accounts} account(s) · {resolved} of {total} rows matched",
+      "adjust": "Adjust",
+      "showAll": "Show all {count} parties",
+      "showLess": "Show fewer",
+      "documentLabel": "Company tax ID",
+      "nameLabel": "Company name",
+      "namePlaceholder": "The first words are enough",
+      "pickFiltered": "These are the parties matching what you entered. Tick the ones that are yours.",
+      "noMatch": "Nothing matched what you typed."
     },
     "kpi": {
       "in": "Money in",
@@ -174,33 +180,19 @@
         "month": "By month"
       }
     },
-    "empty": {
-      "title": "Tick your accounts to see the dashboard",
-      "hint": "Without knowing which accounts are yours, we cannot tell what came in and what went out."
-    },
-    "other": "Other",
-    "unknownParty": "no name in the document",
     "unknownType": "no type in the document",
     "unknownAccount": "account not identified",
     "toggles": {
-      "hint": "Pick what goes into the PDF."
+      "hint": "Pick what goes into the PDF.",
+      "button": "Charts"
     },
     "charts": {
       "flow": "Over time",
-      "counterparties": "Top counterparties",
       "types": "By payment type",
-      "accounts": "By your account",
-      "concentration": "Concentration"
-    },
-    "counterparties": {
-      "hint": "How much came in from each and went out to each."
+      "accounts": "Net per account"
     },
     "accounts": {
-      "hint": "How much moved through each account you marked as yours."
-    },
-    "concentration": {
-      "body": "of the total moved through the {top} largest counterparties, out of {parties} in the period.",
-      "unnamed": "{count} group(s) with no name in the document are included too."
+      "hint": "Money in minus money out for each account you marked as yours."
     },
     "export": "Export PDF",
     "matchLevel": {

@@ -1,40 +1,80 @@
 import { useStorage } from '@vueuse/core'
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 
-import { documentMatches } from '@/domain/identity/documents'
 import {
   MatchLevel,
   createProfile,
   resolveDirection,
 } from '@/domain/identity/direction'
-import { discoverParties } from '@/domain/identity/parties'
+import { documentMatches } from '@/domain/identity/documents'
+import { discoverParties, matchesNameQuery } from '@/domain/identity/parties'
 import { documentDigits } from '@/domain/shared/document'
 
 import { useReceiptsStore } from './receipts'
 
 const MIN_DOCUMENT_DIGITS = 11
+const MIN_DOCUMENT_QUERY = 2
 
 export const useIdentityStore = defineStore('identity', () => {
-  const documents = useStorage('sheethelper:documents', [])
-  const added = ref([])
-  const removed = ref([])
+  const documentFilter = useStorage('sheethelper:document', '')
+  const nameFilter = useStorage('sheethelper:name', '')
+  const added = useStorage('sheethelper:parties-on', [])
+  const removed = useStorage('sheethelper:parties-off', [])
 
   const receipts = useReceiptsStore()
 
   const parties = computed(() => discoverParties(receipts.receipts))
 
-  const suggested = computed(() =>
-    parties.value
-      .filter(
-        (party) =>
-          documentMatches(party.documents[0], documents.value) ||
-          party.maskedDocuments.some((masked) =>
-            documentMatches(masked, documents.value),
-          ),
-      )
-      .map((party) => party.key),
+  const typedDigits = computed(() => documentDigits(documentFilter.value))
+
+  const ownDocument = computed(() =>
+    typedDigits.value.length >= MIN_DOCUMENT_DIGITS
+      ? documentFilter.value
+      : null,
   )
+
+  function matchesDocumentPrefix(party) {
+    if (typedDigits.value.length < MIN_DOCUMENT_QUERY) return false
+    return party.documents.some((document) =>
+      documentDigits(document).startsWith(typedDigits.value),
+    )
+  }
+
+  function matchesDocument(party) {
+    if (!ownDocument.value) return false
+    const known = [ownDocument.value]
+    return (
+      documentMatches(party.documents[0], known) ||
+      party.maskedDocuments.some((masked) => documentMatches(masked, known))
+    )
+  }
+
+  function matchesName(party) {
+    return matchesNameQuery(party.names, nameFilter.value)
+  }
+
+  const suggested = computed(() =>
+    parties.value.filter(matchesDocument).map((party) => party.key),
+  )
+
+  const isFiltering = computed(
+    () =>
+      typedDigits.value.length >= MIN_DOCUMENT_QUERY ||
+      nameFilter.value.trim().length > 0,
+  )
+
+  const listedParties = computed(() => {
+    if (!isFiltering.value)
+      return parties.value.filter((party) => party.rows > 1)
+    return parties.value.filter(
+      (party) =>
+        matchesDocument(party) ||
+        matchesDocumentPrefix(party) ||
+        matchesName(party) ||
+        selected.value.includes(party.key),
+    )
+  })
 
   const selectedParties = computed(() =>
     parties.value.filter(
@@ -50,7 +90,10 @@ export const useIdentityStore = defineStore('identity', () => {
   )
 
   const profile = computed(() =>
-    createProfile(selectedParties.value, documents.value),
+    createProfile(
+      selectedParties.value,
+      ownDocument.value ? [ownDocument.value] : [],
+    ),
   )
 
   const entries = computed(() =>
@@ -64,6 +107,15 @@ export const useIdentityStore = defineStore('identity', () => {
     () => entries.value.filter((entry) => !entry.direction).length,
   )
 
+  const resolvedCount = computed(
+    () => entries.value.filter((entry) => entry.direction).length,
+  )
+
+  const accountCount = computed(
+    () =>
+      new Set(selectedParties.value.flatMap((party) => party.accounts)).size,
+  )
+
   const matchedBy = computed(() =>
     Object.values(MatchLevel)
       .map((level) => ({
@@ -74,20 +126,6 @@ export const useIdentityStore = defineStore('identity', () => {
   )
 
   const isReady = computed(() => selected.value.length > 0)
-
-  function addDocument(value) {
-    const digits = documentDigits(value)
-    if (!digits || digits.length < MIN_DOCUMENT_DIGITS) return false
-    if (documents.value.some((known) => documentDigits(known) === digits)) {
-      return false
-    }
-    documents.value = [...documents.value, value.trim()]
-    return true
-  }
-
-  function removeDocument(value) {
-    documents.value = documents.value.filter((known) => known !== value)
-  }
 
   function toggle(key) {
     if (selected.value.includes(key)) {
@@ -100,18 +138,21 @@ export const useIdentityStore = defineStore('identity', () => {
   }
 
   return {
-    documents,
-    selected,
+    documentFilter,
+    nameFilter,
+    isFiltering,
     parties,
+    listedParties,
     suggested,
+    selected,
     selectedParties,
     profile,
     entries,
     unresolved,
+    resolvedCount,
+    accountCount,
     matchedBy,
     isReady,
-    addDocument,
-    removeDocument,
     toggle,
   }
 })

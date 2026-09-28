@@ -26,6 +26,35 @@ export function formatDocument(value) {
   return raw
 }
 
+const CPF_GROUPS = [3, 3, 3, 2]
+const CPF_SEPARATORS = ['.', '.', '-']
+const CNPJ_GROUPS = [2, 3, 3, 4, 2]
+const CNPJ_SEPARATORS = ['.', '.', '/', '-']
+const CPF_LENGTH = 11
+const CNPJ_LENGTH = 14
+
+export function maskDocument(value) {
+  const digits = documentDigits(value).slice(0, CNPJ_LENGTH)
+  if (!digits) return ''
+
+  const asCpf = digits.length <= CPF_LENGTH
+  const groups = asCpf ? CPF_GROUPS : CNPJ_GROUPS
+  const separators = asCpf ? CPF_SEPARATORS : CNPJ_SEPARATORS
+
+  let masked = ''
+  let cursor = 0
+  for (
+    let index = 0;
+    index < groups.length && cursor < digits.length;
+    index += 1
+  ) {
+    if (index) masked += separators[index - 1]
+    masked += digits.slice(cursor, cursor + groups[index])
+    cursor += groups[index]
+  }
+  return masked
+}
+
 export function isValidDocument(value) {
   if (!value) return false
   if (isMasked(value)) return true

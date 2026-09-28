@@ -148,16 +148,22 @@
     "subtitle": "Uma visão dos comprovantes e extratos que você enviou, pronta para exportar em PDF.",
     "identity": {
       "title": "Quem é você nesses documentos",
-      "hint": "Informe o CNPJ ou CPF e marque as contas que são suas. É assim que sabemos o que é entrada e o que é saída.",
-      "placeholder": "CNPJ ou CPF",
-      "add": "Adicionar",
-      "invalid": "Documento inválido ou já adicionado.",
-      "remove": "Remover documento",
+      "hint": "Digite o CNPJ e o nome da empresa para filtrar as partes encontradas nos documentos. O CNPJ é conferido inclusive quando vem mascarado.",
+      "placeholder": "00.000.000/0000-00",
       "pick": "Marque abaixo as partes que são você. As que casaram com o documento já vêm marcadas.",
       "matched": "reconhecida",
       "counts": "{rows} lançamento(s) · pagou {payer} · recebeu {payee}",
       "matchedBy": "Como reconhecemos suas linhas:",
-      "unresolved": "{count} fora (você não é parte)"
+      "unresolved": "{count} fora (você não é parte)",
+      "summary": "{accounts} conta(s) · {resolved} de {total} linhas reconhecidas",
+      "adjust": "Ajustar",
+      "showAll": "Ver todas as {count} partes",
+      "showLess": "Ver menos",
+      "documentLabel": "CNPJ ou CPF da empresa",
+      "nameLabel": "Nome da empresa",
+      "namePlaceholder": "As primeiras palavras já bastam",
+      "pickFiltered": "Estas são as partes que combinam com o que você informou. Marque as que são suas.",
+      "noMatch": "Nada casou com o que você digitou."
     },
     "kpi": {
       "in": "Entradas",
@@ -174,33 +180,19 @@
         "month": "Por mês"
       }
     },
-    "empty": {
-      "title": "Marque suas contas para ver o painel",
-      "hint": "Sem saber quais contas são suas, não dá para dizer o que entrou e o que saiu."
-    },
-    "other": "Outros",
-    "unknownParty": "sem nome no documento",
     "unknownType": "sem tipo no documento",
     "unknownAccount": "conta não identificada",
     "toggles": {
-      "hint": "Escolha o que entra no PDF."
+      "hint": "Escolha o que entra no PDF.",
+      "button": "Gráficos"
     },
     "charts": {
       "flow": "No tempo",
-      "counterparties": "Maiores contrapartes",
       "types": "Por tipo de pagamento",
-      "accounts": "Por conta sua",
-      "concentration": "Concentração"
-    },
-    "counterparties": {
-      "hint": "Quanto entrou de cada um e quanto saiu para cada um."
+      "accounts": "Valor final por conta"
     },
     "accounts": {
-      "hint": "Quanto passou por cada conta que você marcou como sua."
-    },
-    "concentration": {
-      "body": "do total movimentado passou pelas {top} maiores contrapartes, de {parties} no período.",
-      "unnamed": "{count} grupo(s) sem nome no documento também entraram na conta."
+      "hint": "Entradas menos saídas em cada conta que você marcou como sua."
     },
     "export": "Exportar PDF",
     "matchLevel": {

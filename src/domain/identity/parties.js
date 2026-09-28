@@ -6,6 +6,17 @@ const MIN_PREFIX = 8
 
 const SIDES = ['payer', 'payee']
 
+export function matchesNameQuery(names, query) {
+  const needle = normalizeName(query)
+  if (!needle) return false
+
+  return names.some((name) => {
+    const candidate = normalizeName(name)
+    if (!candidate) return false
+    return candidate.startsWith(needle) || candidate.includes(` ${needle}`)
+  })
+}
+
 export function sameName(a, b) {
   return namesMatch(a, b, MIN_PREFIX)
 }

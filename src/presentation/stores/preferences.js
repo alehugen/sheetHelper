@@ -22,7 +22,6 @@ export const usePreferencesStore = defineStore('preferences', () => {
   const rates = ref(
     container.exchangeRates.cached()?.rates ?? { [BASE_CURRENCY]: 1 },
   )
-  const isLoadingRates = ref(false)
   const ratesFailed = ref(false)
 
   if (!isSupportedLocale(locale.value)) locale.value = DEFAULT_LOCALE
@@ -46,26 +45,13 @@ export const usePreferencesStore = defineStore('preferences', () => {
   }))
 
   async function loadRates() {
-    isLoadingRates.value = true
-    try {
-      const snapshot = await container.exchangeRates.load()
-      if (snapshot?.rates) {
-        rates.value = snapshot.rates
-        ratesFailed.value = false
-      } else {
-        ratesFailed.value = true
-      }
-    } finally {
-      isLoadingRates.value = false
+    const snapshot = await container.exchangeRates.load()
+    if (snapshot?.rates) {
+      rates.value = snapshot.rates
+      ratesFailed.value = false
+      return
     }
-  }
-
-  function setLocale(next) {
-    if (isSupportedLocale(next)) locale.value = next
-  }
-
-  function setCurrency(next) {
-    if (isSupportedCurrency(next)) currency.value = next
+    ratesFailed.value = true
   }
 
   watch(
@@ -90,14 +76,10 @@ export const usePreferencesStore = defineStore('preferences', () => {
     currency,
     rates,
     activeRate,
-    isLoadingRates,
     ratesFailed,
     effectiveCurrency,
     formatContext,
     locales: SUPPORTED_LOCALES,
     currencies: CURRENCIES,
-    setLocale,
-    setCurrency,
-    loadRates,
   }
 })

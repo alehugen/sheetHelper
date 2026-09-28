@@ -29,7 +29,6 @@
   --color-chart-2: #c0453f;
   --color-chart-3: #6a4fa3;
   --color-chart-4: #b8860b;
-  --color-chart-neutral: var(--color-ink-400);
   --color-chart-grid: var(--color-ink-200);
 
   --font-sans:
@@ -252,4 +251,44 @@
   h2 {
     break-after: avoid;
   }
+}
+
+@layer components {
+  .chart-tooltip {
+    @apply text-body min-w-36 text-xs;
+  }
+  .chart-tooltip p {
+    @apply flex items-center gap-2;
+  }
+  .chart-tooltip p span:last-of-type {
+    @apply text-muted;
+  }
+  .chart-tooltip b {
+    @apply text-title ml-auto font-medium tabular-nums;
+  }
+  .chart-tooltip p > b:only-child {
+    @apply ml-0;
+  }
+  .chart-tooltip-title {
+    @apply text-title mb-1.5 block font-semibold;
+  }
+  .chart-tooltip-bullet {
+    @apply size-2.5 shrink-0 rounded-xs;
+  }
+  .chart-tooltip-net {
+    @apply border-ink-200 mt-1 border-t pt-1;
+  }
+}
+
+:root {
+  --vis-tooltip-background-color: var(--color-ink-50);
+  --vis-tooltip-border-color: var(--color-ink-300);
+  --vis-tooltip-text-color: var(--color-body);
+  --vis-axis-tick-label-color: var(--color-subtle);
+  --vis-axis-tick-label-font-size: 11px;
+  --vis-axis-grid-color: var(--color-chart-grid);
+  --vis-axis-domain-color: var(--color-chart-grid);
+  --vis-crosshair-line-stroke-color: var(--color-ink-400);
+  --vis-crosshair-circle-stroke-color: var(--color-ink-50);
+  --vis-font-family: var(--font-sans);
 }
