@@ -4,7 +4,7 @@ import { parseAmount } from '../../shared/money.js'
 import { onlyDigits, upperCase } from '../../shared/text.js'
 import { createReceipt } from '../Receipt.js'
 import { ReceiptType } from '../ReceiptType.js'
-import { scoreKeywords } from '../parsing/labels.js'
+import { extractAccount, scoreKeywords } from '../parsing/labels.js'
 
 const KEYWORDS = [
   ['extrato de conta corrente', 4],
@@ -23,6 +23,7 @@ const DETAIL = /^(\d{2}\/\d{2})\s+(\d{1,2}:\d{2})\s*(.*)$/
 const TRAILING_DOCUMENT = /\s([\d][\d.]*)$/
 const SKIP = /^(saldo anterior|s\s*a\s*l\s*d\s*o)$/i
 const DETAIL_LOOKAHEAD = 4
+const HEADER_SCAN = 8
 
 function normalizeDocument(digits) {
   if (!digits) return null
@@ -114,6 +115,7 @@ export const bbStatementParser = {
 
   parse(lines, context = {}) {
     const holder = accountHolder(lines)
+    const holderAccount = extractAccount(lines.slice(0, HEADER_SCAN))
     const receipts = []
 
     for (let i = 0; i < lines.length; i += 1) {
@@ -127,8 +129,14 @@ export const bbStatementParser = {
         name: detail?.name ?? null,
         document: detail?.document ? formatDocument(detail.document) : null,
         bank: null,
+        account: null,
       }
-      const owner = { name: holder, document: null, bank: BANK }
+      const owner = {
+        name: holder,
+        document: null,
+        bank: BANK,
+        account: holderAccount,
+      }
       const [payer, payee] = entry.credit
         ? [counterparty, owner]
         : [owner, counterparty]
@@ -142,9 +150,11 @@ export const bbStatementParser = {
           payerName: payer.name,
           payerDocument: payer.document,
           payerBank: payer.bank,
+          payerAccount: payer.account,
           payeeName: payee.name,
           payeeDocument: payee.document,
           payeeBank: payee.bank,
+          payeeAccount: payee.account,
           transactionId: entry.document,
           description: upperCase(entry.historico),
           sourceFile: context.sourceFile ?? null,

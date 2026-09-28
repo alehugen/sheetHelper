@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { ACCEPTED_TYPES } from '@/infrastructure/extraction'
+import { container } from '@/container'
 
 import AppBadge from '../components/ui/AppBadge.vue'
 import AppCard from '../components/ui/AppCard.vue'
@@ -11,6 +11,7 @@ import AppIcon from '../components/ui/AppIcon.vue'
 import { useReceiptIntake } from '../composables/useReceiptIntake'
 
 const { t } = useI18n()
+const accepts = container.textExtractor.accepts
 const { rejected, accept, dismissRejected } = useReceiptIntake()
 
 const steps = computed(() =>
@@ -35,7 +36,7 @@ const steps = computed(() =>
     </header>
 
     <AppDropzone
-      :accept="ACCEPTED_TYPES"
+      :accept="accepts"
       :title="t('upload.dropTitle')"
       :description="t('upload.dropDescription')"
       @files="accept"

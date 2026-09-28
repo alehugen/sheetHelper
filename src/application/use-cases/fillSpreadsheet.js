@@ -1,4 +1,5 @@
-import { Direction, targetColumn } from '@/domain/spreadsheet/ColumnMapping'
+import { targetColumn } from '@/domain/spreadsheet/ColumnMapping'
+import { Direction } from '@/domain/shared/direction'
 import {
   assertCapacity,
   assignTargetRows,

@@ -28,6 +28,24 @@ export function fold(value) {
   return deburr(value).toLowerCase()
 }
 
+export function normalizeName(value) {
+  return fold(value)
+    .replace(/[^a-z0-9 ]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+export function namesMatch(a, b, minPrefix) {
+  const left = normalizeName(a)
+  const right = normalizeName(b)
+  if (!left || !right) return false
+  if (left === right) return true
+
+  const [short, long] =
+    left.length <= right.length ? [left, right] : [right, left]
+  return short.length >= minPrefix && long.startsWith(short)
+}
+
 export function upperCase(value) {
   return String(value ?? '')
     .trim()

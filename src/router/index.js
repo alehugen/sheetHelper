@@ -23,6 +23,12 @@ const routes = [
     meta: { titleKey: 'fill.goToFill', requiresReceipts: true },
   },
   {
+    path: '/painel',
+    name: 'dashboard',
+    component: () => import('@/presentation/views/DashboardView.vue'),
+    meta: { titleKey: 'nav.dashboard', requiresReceipts: true },
+  },
+  {
     path: '/historico',
     name: 'history',
     component: () => import('@/presentation/views/HistoryView.vue'),

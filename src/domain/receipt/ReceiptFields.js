@@ -15,6 +15,7 @@ export const RECEIPT_FIELDS = [
   { key: 'payerName', kind: FieldKind.TEXT, width: 28 },
   { key: 'payerDocument', kind: FieldKind.DOCUMENT, width: 22 },
   { key: 'payerBank', kind: FieldKind.TEXT, width: 22 },
+  { key: 'payerAccount', kind: FieldKind.TEXT, width: 18 },
   { key: 'time', kind: FieldKind.TIME, width: 10 },
   {
     key: 'type',
@@ -25,6 +26,7 @@ export const RECEIPT_FIELDS = [
   { key: 'payeeName', kind: FieldKind.TEXT, width: 28 },
   { key: 'payeeDocument', kind: FieldKind.DOCUMENT, width: 22 },
   { key: 'payeeBank', kind: FieldKind.TEXT, width: 22 },
+  { key: 'payeeAccount', kind: FieldKind.TEXT, width: 18 },
   { key: 'transactionId', kind: FieldKind.TEXT, width: 34 },
   { key: 'dueDate', kind: FieldKind.DATE, width: 12 },
   { key: 'description', kind: FieldKind.TEXT, width: 28 },

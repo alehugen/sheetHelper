@@ -5,7 +5,8 @@
   "nav": {
     "upload": "Subir",
     "review": "Revisar",
-    "history": "Recientes"
+    "history": "Recientes",
+    "dashboard": "Panel"
   },
   "theme": {
     "toLight": "Usar tema claro",
@@ -38,7 +39,9 @@
     "transactionId": "Referencia",
     "dueDate": "Vencimiento",
     "description": "Descripción",
-    "sourceFile": "Archivo de origen"
+    "sourceFile": "Archivo de origen",
+    "payerAccount": "Cuenta del pagador",
+    "payeeAccount": "Cuenta del beneficiario"
   },
   "receiptType": {
     "pix": "Pix",
@@ -139,5 +142,72 @@
   "loading": {
     "spreadsheet": "Leyendo la planilla…",
     "receipts": "Leyendo los comprobantes…"
+  },
+  "dashboard": {
+    "title": "Panel",
+    "subtitle": "Una visión de los comprobantes y extractos que subiste, lista para exportar en PDF.",
+    "identity": {
+      "title": "Quién eres en estos documentos",
+      "hint": "Indica tu documento fiscal y marca las cuentas que son tuyas. Así sabemos qué es entrada y qué es salida.",
+      "placeholder": "Documento fiscal",
+      "add": "Agregar",
+      "invalid": "Documento inválido o ya agregado.",
+      "remove": "Quitar documento",
+      "pick": "Marca las partes que eres tú. Las que coinciden con tu documento ya vienen marcadas.",
+      "matched": "reconocida",
+      "counts": "{rows} registro(s) · pagó {payer} · recibió {payee}",
+      "matchedBy": "Cómo reconocimos tus registros:",
+      "unresolved": "{count} fuera (no eres parte)"
+    },
+    "kpi": {
+      "in": "Entradas",
+      "out": "Salidas",
+      "net": "Saldo",
+      "count": "Registros",
+      "skipped": "{count} registro(s) sin entrada o salida definida quedaron fuera de los gráficos."
+    },
+    "flow": {
+      "title": "Entradas y salidas en el tiempo",
+      "hint": "Las barras hacia arriba son entradas, hacia abajo son salidas.",
+      "unit": {
+        "day": "Por día",
+        "month": "Por mes"
+      }
+    },
+    "empty": {
+      "title": "Marca tus cuentas para ver el panel",
+      "hint": "Sin saber qué cuentas son tuyas, no podemos decir qué entró y qué salió."
+    },
+    "other": "Otros",
+    "unknownParty": "sin nombre en el documento",
+    "unknownType": "sin tipo en el documento",
+    "unknownAccount": "cuenta no identificada",
+    "toggles": {
+      "hint": "Elige qué entra en el PDF."
+    },
+    "charts": {
+      "flow": "En el tiempo",
+      "counterparties": "Mayores contrapartes",
+      "types": "Por tipo de pago",
+      "accounts": "Por cuenta tuya",
+      "concentration": "Concentración"
+    },
+    "counterparties": {
+      "hint": "Cuánto entró de cada uno y cuánto salió hacia cada uno."
+    },
+    "accounts": {
+      "hint": "Cuánto pasó por cada cuenta que marcaste como tuya."
+    },
+    "concentration": {
+      "body": "del total movido pasó por las {top} mayores contrapartes, de {parties} en el período.",
+      "unnamed": "{count} grupo(s) sin nombre en el documento también entraron en la cuenta."
+    },
+    "export": "Exportar PDF",
+    "matchLevel": {
+      "document": "por el documento",
+      "masked": "por el documento enmascarado",
+      "account": "por la cuenta",
+      "name": "por el nombre"
+    }
   }
 }

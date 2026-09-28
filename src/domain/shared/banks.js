@@ -44,6 +44,15 @@ const MATCHERS = BANKS.flatMap((bank) =>
   bank.aliases.map((alias) => ({ id: bank.id, alias: fold(alias) })),
 ).sort((a, b) => b.alias.length - a.alias.length)
 
+const LABELS = new Map(BANKS.map((bank) => [bank.id, bank.label]))
+
+export function bankLabel(text) {
+  const id = identifyBank(text)
+  if (id) return LABELS.get(id)
+  const raw = typeof text === 'string' ? text.trim() : ''
+  return raw || null
+}
+
 export function identifyBank(text) {
   const haystack = fold(text)
   if (!haystack) return null

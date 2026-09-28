@@ -16,13 +16,14 @@ const inFlow = computed(() => FLOW.includes(route.name))
 const nav = computed(() => [
   { to: { name: 'upload' }, label: t('nav.upload') },
   { to: { name: 'review' }, label: t('nav.review') },
+  { to: { name: 'dashboard' }, label: t('nav.dashboard') },
   { to: { name: 'history' }, label: t('nav.history') },
 ])
 </script>
 
 <template>
   <div class="flex min-h-svh flex-col">
-    <header class="border-ink-200 bg-ink-50 border-b">
+    <header class="border-ink-200 bg-ink-50 border-b print:hidden">
       <div
         class="mx-auto flex h-16 w-full max-w-6xl items-center gap-4 px-4 sm:px-6"
       >
@@ -60,7 +61,7 @@ const nav = computed(() => [
 
     <main class="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-6">
       <Transition name="slide-fade">
-        <div v-if="inFlow" class="mx-auto mb-10 max-w-2xl">
+        <div v-if="inFlow" class="mx-auto mb-10 max-w-2xl print:hidden">
           <AppStepper />
         </div>
       </Transition>
@@ -72,6 +73,6 @@ const nav = computed(() => [
       </RouterView>
     </main>
 
-    <AppFooter />
+    <AppFooter class="print:hidden" />
   </div>
 </template>

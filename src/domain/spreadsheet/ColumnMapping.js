@@ -1,13 +1,9 @@
 import { isEmpty } from '../receipt/Receipt.js'
 import { REQUIRED_GROUPS } from '../receipt/ReceiptFields.js'
+import { Direction } from '../shared/direction.js'
 import { fold } from '../shared/text.js'
 
 import { detectMapping } from './headers.js'
-
-export const Direction = {
-  CREDIT: 'credit',
-  DEBIT: 'debit',
-}
 
 export const AMOUNT_IN = 'amountIn'
 export const AMOUNT_OUT = 'amountOut'

@@ -5,6 +5,7 @@ import {
 } from '@/application/use-cases/exportSpreadsheet'
 import { createExchangeRateApi } from '@/infrastructure/exchange/ExchangeRateApi'
 import { createReceiptTextExtractor } from '@/infrastructure/extraction'
+import { downloadBlob } from '@/infrastructure/download'
 import { createFillSpreadsheet } from '@/application/use-cases/fillSpreadsheet'
 import {
   createSpreadsheetFiller,
@@ -24,6 +25,7 @@ const mappingStore = createLocalMappingStore()
 
 export const container = {
   textExtractor,
+  download: downloadBlob,
   historyStore,
   exchangeRates,
   extractReceiptsFromFile: createExtractReceiptsFromFile({ textExtractor }),

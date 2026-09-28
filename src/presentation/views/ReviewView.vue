@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
 import { SpreadsheetFormat } from '@/application/ports/SpreadsheetWriter'
-import { ACCEPTED_TYPES } from '@/infrastructure/extraction'
+import { container } from '@/container'
 
 import ProcessingPanel from '../components/receipts/ProcessingPanel.vue'
 import ReceiptPreview from '../components/receipts/ReceiptPreview.vue'
@@ -25,6 +25,7 @@ import { useSpreadsheetExport } from '../composables/useSpreadsheetExport'
 import { useReceiptsStore } from '../stores/receipts'
 
 const { t } = useI18n()
+const accepts = container.textExtractor.accepts
 const store = useReceiptsStore()
 const router = useRouter()
 const { accept } = useReceiptIntake()
@@ -203,7 +204,7 @@ function startOver() {
     </AppCard>
 
     <AppDropzone
-      :accept="ACCEPTED_TYPES"
+      :accept="accepts"
       :title="t('review.addMoreTitle')"
       :description="t('review.addMoreDescription')"
       @files="accept"

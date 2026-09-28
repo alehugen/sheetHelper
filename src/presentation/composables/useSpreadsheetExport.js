@@ -2,7 +2,6 @@ import { ref } from 'vue'
 
 import { SpreadsheetFormat } from '@/application/ports/SpreadsheetWriter'
 import { container } from '@/container'
-import { downloadBlob } from '@/infrastructure/download'
 
 import { useHistoryStore } from '../stores/history'
 import { useReceiptFormat } from './useReceiptFormat'
@@ -24,7 +23,7 @@ export function useSpreadsheetExport() {
         labels: labels.value,
         context: context.value,
       })
-      downloadBlob(blob, fileName)
+      container.download(blob, fileName)
       return fileName
     } catch (cause) {
       error.value = cause?.message ?? 'Erro ao gerar a planilha.'

@@ -23,6 +23,15 @@
   --color-danger: #9b2c2c;
   --color-danger-soft: #f6e7e7;
 
+  --color-chart-in: #2f6fb5;
+  --color-chart-out: #cf6a2e;
+  --color-chart-1: #17876c;
+  --color-chart-2: #c0453f;
+  --color-chart-3: #6a4fa3;
+  --color-chart-4: #b8860b;
+  --color-chart-neutral: var(--color-ink-400);
+  --color-chart-grid: var(--color-ink-200);
+
   --font-sans:
     'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
@@ -59,6 +68,13 @@
     --color-warning-soft: #332a14;
     --color-danger: #e0908e;
     --color-danger-soft: #331d1d;
+
+    --color-chart-in: #4a8ad2;
+    --color-chart-out: #cf7038;
+    --color-chart-1: #3aab8e;
+    --color-chart-2: #cc5b57;
+    --color-chart-3: #8b7ac9;
+    --color-chart-4: #b08a28;
 
     color-scheme: dark;
   }
@@ -175,4 +191,65 @@
 @utility text-numeric {
   font-variant-numeric: tabular-nums;
   font-feature-settings: 'tnum';
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 12mm;
+  }
+
+  :root,
+  :root[data-theme='dark'] {
+    --color-ink-50: #ffffff;
+    --color-ink-100: #ffffff;
+    --color-ink-200: #dee2e6;
+    --color-ink-300: #ced4da;
+    --color-ink-400: #adb5bd;
+    --color-ink-500: #6c757d;
+    --color-ink-600: #495057;
+    --color-ink-700: #343a40;
+    --color-ink-800: #212529;
+
+    --color-chart-in: #2f6fb5;
+    --color-chart-out: #cf6a2e;
+    --color-chart-1: #17876c;
+    --color-chart-2: #c0453f;
+    --color-chart-3: #6a4fa3;
+    --color-chart-4: #b8860b;
+
+    color-scheme: light;
+  }
+
+  body {
+    background: #ffffff;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    box-shadow: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  section {
+    break-inside: avoid;
+  }
+
+  figure,
+  dl,
+  li {
+    break-inside: avoid;
+  }
+
+  h1,
+  h2 {
+    break-after: avoid;
+  }
 }

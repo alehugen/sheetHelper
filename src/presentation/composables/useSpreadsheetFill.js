@@ -2,7 +2,6 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { container } from '@/container'
-import { downloadBlob } from '@/infrastructure/download'
 
 import { useHistoryStore } from '../stores/history'
 import { useTemplateStore } from '../stores/template'
@@ -37,7 +36,10 @@ export function useSpreadsheetFill() {
         translateType: (value) => t(`receiptType.${value}`),
       })
 
-      downloadBlob(new Blob([bytes], { type: XLSX_MIME }), template.fileName)
+      container.download(
+        new Blob([bytes], { type: XLSX_MIME }),
+        template.fileName,
+      )
       history.refresh()
       done.value = fillRows.value.length
       return template.fileName

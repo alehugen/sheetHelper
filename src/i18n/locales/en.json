@@ -5,7 +5,8 @@
   "nav": {
     "upload": "Upload",
     "review": "Review",
-    "history": "Recent"
+    "history": "Recent",
+    "dashboard": "Dashboard"
   },
   "theme": {
     "toLight": "Switch to light theme",
@@ -38,7 +39,9 @@
     "transactionId": "Reference",
     "dueDate": "Due date",
     "description": "Description",
-    "sourceFile": "Source file"
+    "sourceFile": "Source file",
+    "payerAccount": "Payer account",
+    "payeeAccount": "Payee account"
   },
   "receiptType": {
     "pix": "Pix",
@@ -139,5 +142,72 @@
   "loading": {
     "spreadsheet": "Reading the spreadsheet…",
     "receipts": "Reading the receipts…"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "An overview of the receipts and statements you uploaded, ready to export as PDF.",
+    "identity": {
+      "title": "Who you are in these documents",
+      "hint": "Enter your tax ID and tick the accounts that are yours. That is how we tell money in from money out.",
+      "placeholder": "Tax ID",
+      "add": "Add",
+      "invalid": "Invalid or already added.",
+      "remove": "Remove document",
+      "pick": "Tick the parties that are you. Those matching your tax ID are already ticked.",
+      "matched": "matched",
+      "counts": "{rows} row(s) · paid {payer} · received {payee}",
+      "matchedBy": "How we matched your rows:",
+      "unresolved": "{count} left out (you are not a party)"
+    },
+    "kpi": {
+      "in": "Money in",
+      "out": "Money out",
+      "net": "Net",
+      "count": "Rows",
+      "skipped": "{count} row(s) with no direction were left out of the charts."
+    },
+    "flow": {
+      "title": "Money in and out over time",
+      "hint": "Bars above the line are money in, below are money out.",
+      "unit": {
+        "day": "By day",
+        "month": "By month"
+      }
+    },
+    "empty": {
+      "title": "Tick your accounts to see the dashboard",
+      "hint": "Without knowing which accounts are yours, we cannot tell what came in and what went out."
+    },
+    "other": "Other",
+    "unknownParty": "no name in the document",
+    "unknownType": "no type in the document",
+    "unknownAccount": "account not identified",
+    "toggles": {
+      "hint": "Pick what goes into the PDF."
+    },
+    "charts": {
+      "flow": "Over time",
+      "counterparties": "Top counterparties",
+      "types": "By payment type",
+      "accounts": "By your account",
+      "concentration": "Concentration"
+    },
+    "counterparties": {
+      "hint": "How much came in from each and went out to each."
+    },
+    "accounts": {
+      "hint": "How much moved through each account you marked as yours."
+    },
+    "concentration": {
+      "body": "of the total moved through the {top} largest counterparties, out of {parties} in the period.",
+      "unnamed": "{count} group(s) with no name in the document are included too."
+    },
+    "export": "Export PDF",
+    "matchLevel": {
+      "document": "by tax ID",
+      "masked": "by masked tax ID",
+      "account": "by account",
+      "name": "by name"
+    }
   }
 }

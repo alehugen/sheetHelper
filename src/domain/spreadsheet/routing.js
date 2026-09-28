@@ -1,7 +1,7 @@
 import { identifyBank } from '../shared/banks.js'
 import { fold } from '../shared/text.js'
 
-import { Direction } from './ColumnMapping.js'
+import { Direction } from '../shared/direction.js'
 
 const MIN_TOKEN = 3
 const NOISE = new Set(['conta', 'banco', 'bco', 'ltda', 'sa', 'me', 'epp'])

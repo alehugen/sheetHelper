@@ -112,6 +112,8 @@ export const FIELD_LABELS = {
   ],
   barcode: ['codigo de barras', 'linha digitavel'],
   description: ['descricao', 'mensagem', 'observacao', 'finalidade'],
+  agency: ['agencia', 'ag'],
+  account: ['conta corrente', 'conta', 'c/c'],
 }
 
 export const TYPE_KEYWORDS = [

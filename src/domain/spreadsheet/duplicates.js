@@ -1,6 +1,8 @@
-import { fold } from '../shared/text.js'
+import { fold, namesMatch } from '../shared/text.js'
 
-import { Direction, targetColumn } from './ColumnMapping.js'
+import { Direction } from '../shared/direction.js'
+
+import { targetColumn } from './ColumnMapping.js'
 
 const MIN_NAME_PREFIX = 4
 
@@ -8,24 +10,6 @@ export const DuplicateLevel = {
   NONE: 'none',
   POSSIBLE: 'possible',
   CERTAIN: 'certain',
-}
-
-function normalizeName(value) {
-  return fold(value)
-    .replace(/[^a-z0-9 ]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-}
-
-function namesMatch(a, b) {
-  const left = normalizeName(a)
-  const right = normalizeName(b)
-  if (!left || !right) return false
-  if (left === right) return true
-
-  const [short, long] =
-    left.length <= right.length ? [left, right] : [right, left]
-  return short.length >= MIN_NAME_PREFIX && long.startsWith(short)
 }
 
 function cents(value) {
@@ -102,7 +86,9 @@ export function findDuplicate(record, index) {
     index.byDateAmount.get(`${record.date}|${record.amount}`) ?? []
   if (!matches.length) return { level: DuplicateLevel.NONE, matches: [] }
 
-  const named = matches.filter((match) => namesMatch(match.name, record.name))
+  const named = matches.filter((match) =>
+    namesMatch(match.name, record.name, MIN_NAME_PREFIX),
+  )
   return named.length
     ? { level: DuplicateLevel.CERTAIN, matches: named }
     : { level: DuplicateLevel.POSSIBLE, matches }

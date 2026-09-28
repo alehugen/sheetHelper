@@ -210,6 +210,24 @@ export function findFirst(lines, pattern) {
   return null
 }
 
+const AGENCY_IN_LINE = /(?:^|[^a-z])ag(?:encia)?\.?\s*:?\s*(\d[\d.-]*)/
+const ACCOUNT_IN_LINE =
+  /(?:^|[^a-z])(?:conta corrente|conta|c\/c)\.?\s*:?\s*(\d[\d.-]*)/
+
+function scanLines(lines, pattern) {
+  for (const line of lines) {
+    const match = fold(line).match(pattern)
+    if (match) return match[1]
+  }
+  return null
+}
+
+export function extractAccount(section) {
+  const agency = scanLines(section, AGENCY_IN_LINE)
+  const account = scanLines(section, ACCOUNT_IN_LINE)
+  return [agency, account].filter(Boolean).join(' / ') || null
+}
+
 export function guessName(lines) {
   for (const line of lines) {
     const value = cleanValue(line)

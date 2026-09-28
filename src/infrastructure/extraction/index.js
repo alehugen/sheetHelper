@@ -13,6 +13,8 @@ export function createReceiptTextExtractor() {
   const ocr = createOcrTextExtractor()
 
   return {
+    accepts: ACCEPTED_TYPES,
+
     supports: (file) => pdf.supports(file) || ocr.supports(file),
 
     async extract(file, { onProgress } = {}) {

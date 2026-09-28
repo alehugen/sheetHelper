@@ -1,13 +1,13 @@
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 
+import { REQUIRED_GROUPS } from '@/domain/receipt/ReceiptFields'
 import { ReceiptWarning } from '@/domain/receipt/ReceiptWarning'
+import { Direction } from '@/domain/shared/direction'
 import {
-  Direction,
   mappedFields,
   missingRequiredValues,
 } from '@/domain/spreadsheet/ColumnMapping'
-import { REQUIRED_GROUPS } from '@/domain/receipt/ReceiptFields'
 import {
   DuplicateLevel,
   addToIndex,

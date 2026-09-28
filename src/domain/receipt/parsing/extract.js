@@ -11,6 +11,7 @@ import {
   PATTERNS,
   findFirst,
   findLabeled,
+  extractAccount,
   findLabeledDigits,
   guessName,
   scoreKeywords,
@@ -77,6 +78,7 @@ function extractParty(lines, role) {
     name: name ? upperCase(name) : null,
     document: document ? formatDocument(document) : null,
     bank: bank ? upperCase(bank) : null,
+    account: extractAccount(section),
   }
 }
 
@@ -157,9 +159,11 @@ export function extractReceipt({ body, footer }) {
       payerName: payer.name,
       payerDocument: payer.document,
       payerBank: payer.bank,
+      payerAccount: payer.account,
       payeeName: payee.name,
       payeeDocument: payee.document,
       payeeBank: payee.bank,
+      payeeAccount: payee.account,
       transactionId,
       description: findLabeled(body, FIELD_LABELS.description),
     },
