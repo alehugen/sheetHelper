@@ -29,6 +29,12 @@ const routes = [
     meta: { titleKey: 'nav.dashboard', requiresReceipts: true },
   },
   {
+    path: '/fatura',
+    name: 'card',
+    component: () => import('@/presentation/views/CardView.vue'),
+    meta: { titleKey: 'nav.card' },
+  },
+  {
     path: '/historico',
     name: 'history',
     component: () => import('@/presentation/views/HistoryView.vue'),

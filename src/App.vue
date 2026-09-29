@@ -17,6 +17,7 @@ const nav = computed(() => [
   { to: { name: 'upload' }, label: t('nav.upload') },
   { to: { name: 'review' }, label: t('nav.review') },
   { to: { name: 'dashboard' }, label: t('nav.dashboard') },
+  { to: { name: 'card' }, label: t('nav.card') },
   { to: { name: 'history' }, label: t('nav.history') },
 ])
 </script>

@@ -6,7 +6,8 @@
     "upload": "Subir",
     "review": "Revisar",
     "history": "Recientes",
-    "dashboard": "Panel"
+    "dashboard": "Panel",
+    "card": "Factura"
   },
   "theme": {
     "toLight": "Usar tema claro",
@@ -201,5 +202,63 @@
       "account": "por la cuenta",
       "name": "por el nombre"
     }
+  },
+  "card": {
+    "title": "Factura de la tarjeta",
+    "subtitle": "Sube la factura y mira adónde fue el dinero — y cuánto de las próximas ya está comprometido.",
+    "another": "Otra factura",
+    "issuer": {
+      "label": "¿De qué banco es la factura?",
+      "others": "¿Otro banco? Por ahora leemos Nubank e Itaú. Iremos agregando según consigamos ejemplos."
+    },
+    "upload": {
+      "title": "Envía la factura",
+      "reading": "Leyendo {file}…",
+      "failed": "No pude leer este archivo. ¿Es el PDF de la factura del banco elegido?"
+    },
+    "checks": {
+      "ok": "las cuentas cuadran",
+      "failed": "las cuentas no cuadran",
+      "title": "No mostré el análisis",
+      "explain": "Lo que leí no coincide con los totales que la propia factura declara. Prefiero no mostrar ningún número a mostrar uno equivocado — el banco puede haber cambiado el diseño."
+    },
+    "kpi": {
+      "total": "Total de la factura",
+      "next": "La próxima ya empieza en",
+      "installments": "Es cuota de compra anterior",
+      "committed": "Comprometido en total"
+    },
+    "commitment": {
+      "title": "Ya comprometido",
+      "hint": "Cuánto de las próximas facturas ya está cerrado por las cuotas abiertas.",
+      "month": "mes {n}",
+      "divergence": "El emisor declara {declared} para la próxima factura; las cuotas visibles aquí suman {ours}. La diferencia suele ser una tarjeta adicional o una compra que el PDF no detalla — por eso mostramos su número."
+    },
+    "findings": {
+      "title": "Hallazgos",
+      "duplicate": "{merchant} aparece {count} veces el mismo día, de {amount} cada una.",
+      "fee": "{total} en tarifas.",
+      "interest": "{total} en intereses — vale revisar.",
+      "iof": "{total} de IOF.",
+      "international": "{count} compra(s) en moneda extranjera, sumando {total}."
+    },
+    "byCategory": {
+      "title": "Por categoría",
+      "pending": "{count} registro(s) sin categoría"
+    },
+    "topMerchants": "Dónde más gastaste",
+    "categories": {
+      "food": "Alimentación",
+      "market": "Supermercado",
+      "transport": "Transporte",
+      "health": "Salud",
+      "subscription": "Suscripciones",
+      "shopping": "Compras",
+      "travel": "Viaje",
+      "services": "Servicios",
+      "other": "Otros",
+      "none": "sin categoría"
+    },
+    "export": "Exportar PDF"
   }
 }

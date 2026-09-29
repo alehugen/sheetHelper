@@ -6,7 +6,8 @@
     "upload": "Enviar",
     "review": "Revisar",
     "history": "Recentes",
-    "dashboard": "Painel"
+    "dashboard": "Painel",
+    "card": "Fatura"
   },
   "theme": {
     "toLight": "Usar tema claro",
@@ -201,5 +202,63 @@
       "account": "pela conta",
       "name": "pelo nome"
     }
+  },
+  "card": {
+    "title": "Fatura do cartão",
+    "subtitle": "Solte a fatura e veja para onde o dinheiro foi — e quanto das próximas já está comprometido.",
+    "another": "Outra fatura",
+    "issuer": {
+      "label": "De qual banco é a fatura?",
+      "others": "Outro banco? Por enquanto lemos Nubank e Itaú. Vamos acrescentando conforme conseguimos exemplos."
+    },
+    "upload": {
+      "title": "Envie a fatura",
+      "reading": "Lendo {file}…",
+      "failed": "Não consegui ler este arquivo. Ele é o PDF da fatura, do banco selecionado?"
+    },
+    "checks": {
+      "ok": "as contas fecham",
+      "failed": "as contas não fecham",
+      "title": "Não mostrei a análise",
+      "explain": "A soma do que eu li não bate com os totais que a própria fatura declara. Prefiro não mostrar número nenhum a mostrar um errado — o banco pode ter mudado o layout."
+    },
+    "kpi": {
+      "total": "Total da fatura",
+      "next": "A próxima já começa em",
+      "installments": "É parcela de compra antiga",
+      "committed": "Comprometido no total"
+    },
+    "commitment": {
+      "title": "O que já está comprometido",
+      "hint": "Quanto das próximas faturas já está fechado pelas parcelas em aberto.",
+      "month": "mês {n}",
+      "divergence": "O emissor declara {declared} para a próxima fatura; as parcelas visíveis aqui somam {ours}. A diferença costuma ser cartão adicional ou compra que o PDF não detalha — por isso mostramos o número dele."
+    },
+    "findings": {
+      "title": "Achados",
+      "duplicate": "{merchant} aparece {count} vezes no mesmo dia, de {amount} cada.",
+      "fee": "{total} em tarifas.",
+      "interest": "{total} em juros — vale conferir.",
+      "iof": "{total} de IOF.",
+      "international": "{count} compra(s) em moeda estrangeira, somando {total}."
+    },
+    "byCategory": {
+      "title": "Por categoria",
+      "pending": "{count} lançamento(s) sem categoria"
+    },
+    "topMerchants": "Onde você mais gastou",
+    "categories": {
+      "food": "Alimentação",
+      "market": "Mercado",
+      "transport": "Transporte",
+      "health": "Saúde",
+      "subscription": "Assinaturas",
+      "shopping": "Compras",
+      "travel": "Viagem",
+      "services": "Serviços",
+      "other": "Outros",
+      "none": "sem categoria"
+    },
+    "export": "Exportar PDF"
   }
 }

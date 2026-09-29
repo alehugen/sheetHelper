@@ -6,7 +6,8 @@
     "upload": "Upload",
     "review": "Review",
     "history": "Recent",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "card": "Card"
   },
   "theme": {
     "toLight": "Switch to light theme",
@@ -201,5 +202,63 @@
       "account": "by account",
       "name": "by name"
     }
+  },
+  "card": {
+    "title": "Card statement",
+    "subtitle": "Drop the statement and see where the money went — and how much of the next ones is already committed.",
+    "another": "Another statement",
+    "issuer": {
+      "label": "Which bank is this statement from?",
+      "others": "Another bank? For now we read Nubank and Itaú. More as we get samples."
+    },
+    "upload": {
+      "title": "Send the statement",
+      "reading": "Reading {file}…",
+      "failed": "I could not read this file. Is it the statement PDF from the bank you picked?"
+    },
+    "checks": {
+      "ok": "the totals add up",
+      "failed": "the totals do not add up",
+      "title": "I did not show the analysis",
+      "explain": "What I read does not match the totals the statement itself declares. I would rather show no number than a wrong one — the bank may have changed the layout."
+    },
+    "kpi": {
+      "total": "Statement total",
+      "next": "Next one already starts at",
+      "installments": "Is an old purchase instalment",
+      "committed": "Committed in total"
+    },
+    "commitment": {
+      "title": "Already committed",
+      "hint": "How much of the coming statements is already locked by open instalments.",
+      "month": "month {n}",
+      "divergence": "The issuer states {declared} for the next statement; the instalments visible here add up to {ours}. The gap is usually an additional card or a purchase the PDF does not detail — which is why we show their number."
+    },
+    "findings": {
+      "title": "Findings",
+      "duplicate": "{merchant} appears {count} times on the same day, {amount} each.",
+      "fee": "{total} in fees.",
+      "interest": "{total} in interest — worth a look.",
+      "iof": "{total} in IOF tax.",
+      "international": "{count} purchase(s) in foreign currency, totalling {total}."
+    },
+    "byCategory": {
+      "title": "By category",
+      "pending": "{count} entry(ies) with no category"
+    },
+    "topMerchants": "Where you spent most",
+    "categories": {
+      "food": "Food",
+      "market": "Groceries",
+      "transport": "Transport",
+      "health": "Health",
+      "subscription": "Subscriptions",
+      "shopping": "Shopping",
+      "travel": "Travel",
+      "services": "Services",
+      "other": "Other",
+      "none": "no category"
+    },
+    "export": "Export PDF"
   }
 }

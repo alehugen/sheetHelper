@@ -1,8 +1,8 @@
 <h1 align="center">sheetHelper</h1>
 
 <p align="center">
-  Comprovantes e extratos bancários viram linhas na sua planilha financeira e um
-  painel exportável em PDF — sem que nenhum arquivo saia do seu navegador.
+  Comprovantes, extratos e faturas de cartão viram linhas na sua planilha,
+  gráficos e análise — sem que nenhum arquivo saia do seu navegador.
 </p>
 
 <p align="center">
@@ -24,18 +24,25 @@ o mesmo arquivo com as linhas novas e absolutamente nada mais alterado.
 
 ## O fluxo
 
+São três coisas independentes. A primeira tem passos encadeados; as outras duas
+começam do zero.
+
 ```
-①  Comprovantes  →  ②  Conferência  →  ③  Planilha
-   PDF, foto          corrija o que      baixe uma nova
-   ou extrato         foi lido           ou preencha a sua
-                                      ↘  ③' Painel
-                                         gráficos e PDF
+Comprovantes e extratos
+①  Envio      →  ②  Conferência  →  ③  Planilha
+   PDF, foto        corrija o que      baixe uma nova
+   ou extrato       foi lido           ou preencha a sua
+                                    ↘  ③' Painel
+                                       gráficos e PDF
+
+Fatura de cartão
+   Escolhe o banco  →  solta o PDF  →  análise e PDF
 ```
 
-Cada passo depende do anterior, e dá para voltar a qualquer momento sem perder
-nada. No passo 3 você escolhe entre baixar um `.xlsx`/`.csv` novo ou subir a
-planilha que já mantém e deixar o app completá-la. Com os mesmos dados já lidos,
-o **painel** monta gráficos de entradas e saídas e exporta em PDF.
+No passo 3 você escolhe entre baixar um `.xlsx`/`.csv` novo ou subir a planilha
+que já mantém e deixar o app completá-la. O **painel** usa os mesmos dados já
+lidos. A **fatura** é um caminho à parte: nada do que você envia lá se mistura
+com a conciliação.
 
 ## O que ele faz
 
@@ -55,6 +62,9 @@ o **painel** monta gráficos de entradas e saídas e exporta em PDF.
   tempo, por tipo de pagamento e valor final por conta — **exportável em PDF**
 - Descobre **quem é você** nos documentos a partir do seu CNPJ e do nome da
   empresa, para saber o que é entrada e o que é saída
+- Lê **fatura de cartão de crédito** (Nubank e Itaú) e mostra para onde o
+  dinheiro foi, **quanto das próximas faturas já está comprometido** pelas
+  parcelas, e o que parece errado — cobrança duplicada, tarifa, juros, IOF
 - **3 idiomas** (pt-BR, English, Español), **2 moedas** (BRL, USD com conversão
   real) e tema claro/escuro — tudo salvo no navegador
 
@@ -69,7 +79,7 @@ Requer Node 20.19+ ou 22.12+ (exigência do Vite 8). Não há backend, banco, ne
 variável de ambiente.
 
 ```bash
-npm test           # 159 testes (Vitest)
+npm test           # 231 testes (Vitest)
 npm run build      # build de produção
 npm run format     # prettier
 ```
@@ -392,6 +402,128 @@ identidades selecionadas, para o arquivo dizer de quem é e de quando.
 
 ---
 
+# Parte 4 — Fatura de cartão
+
+Um caminho próprio, que não conversa com a conciliação: escolhe o banco, solta o
+PDF, e o app responde três perguntas — para onde o dinheiro foi, quanto das
+próximas faturas já está comprometido, e o que parece errado.
+
+## A conta tem que fechar antes de aparecer
+
+Esta é a regra que governa a feature inteira. Toda fatura declara totais
+intermediários, e a leitura precisa bater com eles:
+
+```
+Itaú     compras + internacionais = "Total dos lançamentos atuais"
+         parcelas futuras          = "Próxima fatura"
+Nubank   anterior + pagamentos + compras + IOF + outros = "Total a pagar"
+```
+
+**Se não fecha, o app não mostra número nenhum** — diz que não conseguiu ler e
+aponta qual conferência falhou. Num app financeiro, um número errado é pior que
+nenhum: quem confia uma vez confia sempre.
+
+Isso também é o que torna seguro o banco mudar o layout sem avisar. E foi o que
+achou dois bugs durante o desenvolvimento, incluindo uma compra internacional de
+R$ 60 que o parser não estava lendo.
+
+## Banco é configuração, não código
+
+Um motor de 138 linhas lê qualquer fatura a partir de uma **descrição** —
+objeto puro, sem função:
+
+```js
+export const itau = {
+  sections: {
+    purchases: /^Lançamentos: compras e saques/i,
+    upcoming: /^Compras parceladas - próximas faturas/i,
+  },
+  entry:
+    /^(?<date>\d{2}\/\d{2})\s+(?<merchant>.+?)(?:\s+(?<current>\d{2})\/(?<total>\d{2}))?\s+(?<amount>-?[\d.]+,\d{2})$/,
+  declared: { current: /^Total dos lançamentos atuais\s+([\d.]+,\d{2})$/ },
+  checks: [{ section: 'purchases', declared: 'purchases' }],
+}
+```
+
+Itaú custou 73 linhas, Nubank 50. Um banco novo é isso, mais uma fixture
+fabricada e um teste de reconciliação.
+
+A pessoa escolhe o banco antes de enviar, e não há função de detecção nenhuma.
+A alternativa — adivinhar por palavra-chave — custaria registry, pontuação,
+limiar e desempate, e ainda precisaria da conferência de qualquer jeito.
+
+## Duas armadilhas que só aparecem com fatura real
+
+**O Itaú lista as parcelas futuras junto com as do mês.** A primeira leitura
+somou R$ 17.335 onde a fatura dizia R$ 13.805 — as mesmas compras contadas duas
+vezes. Hoje as seções são separadas e um teste verifica explicitamente que a
+soma _não_ é a inflada.
+
+**A parcela do Itaú é escrita `05/12`, sem a palavra "parcela"** — idêntica a
+uma data. Só a posição na linha distingue: a data abre, a parcela vem colada ao
+valor.
+
+E as páginas de simulação de parcelamento, que os dois bancos trazem, estão
+cheias de valores grandes que não são lançamento. O motor só lê dentro de seções
+conhecidas, então elas passam batido — com teste que confirma.
+
+## O número que ninguém te dá
+
+Toda fatura brasileira traz `Parcela 3/10`, e disso sai a curva descendente de
+quanto você já deve nos próximos meses, antes de gastar qualquer coisa:
+
+```
+Sua próxima fatura já começa em R$ 1.240
+mês 1  ████████████████████  1.240
+mês 2  ██████████████          890
+mês 3  ██████████              640
+mês 4  ██████                  410
+```
+
+Os dois emissores **declaram** o total da próxima fatura, e o declarado manda —
+ele enxerga cartões adicionais e ciclos que o PDF não detalha. A aritmética de
+parcelas serve para desenhar a curva mês a mês, que nenhum deles fornece, e para
+desconfiar: **quando os dois discordam, o app mostra os dois e explica**, em vez
+de escolher um.
+
+Numa fatura real do Nubank a diferença foi de R$ 1.679 — havia um segundo cartão
+fora do detalhamento. Ter construído em cima da minha conta teria produzido um
+número 30% maior que o impresso duas páginas antes.
+
+## Categoria em três camadas
+
+Faturas categorizam de forma inconsistente: o Itaú traz categoria em 88% das
+linhas, o Nubank não traz nenhuma, e a exportação CSV dele
+[deixou de incluí-la](https://comunidade.nubank.com.br/t/exporta%C3%A7%C3%A3o-da-fatura-com-categoria-organiza%C3%A7%C3%A3o-financeira/621815).
+Não dá para depender disso.
+
+| Camada           | Quando entra                                    |
+| ---------------- | ----------------------------------------------- |
+| Arquivo          | quando o emissor categoriza                     |
+| Dicionário local | ~100 estabelecimentos, no formato do `banks.js` |
+| Correção dela    | vence as outras duas e fica salva               |
+
+O que nenhuma camada reconhece fica **"sem categoria"**, visível — nunca é
+empurrado para "Outros". É a mesma regra do balde "conta não identificada" do
+painel: nada some em silêncio.
+
+## Achados
+
+O bloco mais subestimado, porque são fatos e não interpretações: cobrança
+duplicada (mesma loja, mesmo dia, mesmo valor), tarifas, juros, IOF e compras em
+moeda estrangeira.
+
+## Marcas dos bancos
+
+Vêm de [`@edusites/bancos-brasil`](https://www.npmjs.com/package/@edusites/bancos-brasil)
+(MIT), mas **extraídas em vez de instaladas**: o pacote traz 41 bancos num
+objeto único sem tree-shaking, 46 kB gzip para usar dois. As duas marcas que
+usamos ocupam 8,6 kB e não são dependência. São glifos monocromáticos sobre a
+cor da marca, não reproduções do logotipo. Banco sem marca cai num quadrado
+neutro, então acrescentar um nunca quebra a tela.
+
+---
+
 ## Arquitetura
 
 ```
@@ -401,6 +533,8 @@ src/
 │   ├── receipt/       entidade, campos, extrator e parsers de extrato
 │   ├── identity/      quem é você nos documentos: partes, mascarados, sentido
 │   ├── insights/      agregações do painel
+│   ├── card/          fatura: leitura, parcelas, achados, categorias
+│   │   └── issuers/   um objeto de configuração por banco
 │   └── spreadsheet/   mapeamento de colunas, duplicatas, roteamento, posicionamento
 ├── application/       casos de uso e portas (contratos)
 ├── infrastructure/    adaptadores: pdf.js, tesseract, xlsx, csv, câmbio, storage
@@ -434,6 +568,7 @@ reflexão e sem escopos, porque aqui é uma aba do navegador e um usuário por v
 | **Sinônimo de comprovante**           | Acrescentar em `vocabulary.js`                                                                                      | Nada — vale para todos os tipos                                                                 |
 | **Sinônimo de cabeçalho de planilha** | Acrescentar em `HEADER_VOCABULARY` ([`headers.js`](src/domain/spreadsheet/headers.js))                              | Nada                                                                                            |
 | **Formato de extrato**                | Criar `src/domain/receipt/statements/<nome>.js` com `{ id, score(text), parse(lines) }` e registrar em `STATEMENTS` | Nada                                                                                            |
+| **Banco na leitura de fatura**        | Um objeto em `src/domain/card/issuers/` e a entrada em `ISSUERS`                                                    | Uma fixture fabricada e o teste de reconciliação — o motor não muda                             |
 | **Coluna na planilha gerada**         | Uma entrada em `RECEIPT_FIELDS` + a chave em `fields` nos 3 idiomas                                                 | Nada                                                                                            |
 
 Detectar um formato novo é pontuação, não `if`: cada parser dá uma nota ao texto
@@ -493,7 +628,7 @@ e exportação, nunca o dado.
 |                                     |                                                    |
 | ----------------------------------- | -------------------------------------------------- |
 | Vue 3 + Vite                        | `<script setup>`, code splitting por rota          |
-| Vitest + happy-dom                  | 159 testes de domínio, store e helpers             |
+| Vitest + happy-dom                  | 231 testes de domínio, store e helpers             |
 | Unovis                              | gráficos do painel (área e barra)                  |
 | Pinia + Vue Router                  | estado compartilhado e navegação em passos         |
 | Tailwind CSS v4                     | tema em CSS via `@theme`, sem `tailwind.config.js` |
@@ -504,10 +639,10 @@ e exportação, nunca o dado.
 | vue-i18n, vue-currency-input        | idioma e máscara de moeda                          |
 | boletos-desc-br, cpf-cnpj-validator | validação de boleto e de documento                 |
 
-O carregamento inicial é ~111 kB gzip — Vue, router, Pinia, i18n, o domínio e o
-design system. Tudo o mais é sob demanda: pdf.js (124 kB), o painel com o Unovis
-(72 kB), o OCR e o gerador de planilha só descem quando alguém envia um arquivo,
-abre o painel ou exporta.
+O carregamento inicial é ~113 kB gzip — Vue, router, Pinia, i18n, o domínio e o
+design system. Tudo o mais é sob demanda: pdf.js (124 kB), os gráficos com o
+Unovis (56 kB, compartilhados entre painel e fatura), o painel (17 kB), a fatura
+(16 kB), o OCR e o gerador de planilha.
 
 ### Por que essas bibliotecas
 
@@ -552,27 +687,29 @@ abre o painel ou exporta.
 npm test
 ```
 
-159 testes em 12 arquivos, rodando em ~1 s. Vitest reaproveita o `vite.config.js`,
+231 testes em 17 arquivos, rodando em ~5 s. Vitest reaproveita o `vite.config.js`,
 então os aliases `@/` valem sem configuração paralela.
 
 A cobertura não é uniforme de propósito — os testes miram onde já houve
 regressão de verdade:
 
-| Área                 | O que está travado                                                                  |
-| -------------------- | ----------------------------------------------------------------------------------- |
-| Casamento de rótulos | `data de` não é truncamento de `data de vencimento`; `banco` não casa em `UNIBANCO` |
-| Extração             | os cinco documentos de exemplo, campo a campo                                       |
-| Identidade           | mascarado confere; nome truncado do extrato não funde sozinho; chaves estáveis      |
-| Agregações           | os gráficos somam o mesmo total dos cartões de número                               |
-| Planilha             | duplicata por identificador, por data+valor e por prefixo de nome                   |
-| Painel               | filtro ao vivo, marcação só com documento completo, memória entre visitas           |
+| Área                 | O que está travado                                                                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Casamento de rótulos | `data de` não é truncamento de `data de vencimento`; `banco` não casa em `UNIBANCO`                                                         |
+| Extração             | os cinco documentos de exemplo, campo a campo                                                                                               |
+| Identidade           | mascarado confere; nome truncado do extrato não funde sozinho; chaves estáveis                                                              |
+| Agregações           | os gráficos somam o mesmo total dos cartões de número                                                                                       |
+| Planilha             | duplicata por identificador, por data+valor e por prefixo de nome                                                                           |
+| Painel               | filtro ao vivo, marcação só com documento completo, memória entre visitas                                                                   |
+| Fatura               | parcela futura não vira gasto do mês; `05/12` é parcela e não data; simulação de parcelamento fica de fora; o declarado vence a minha conta |
 
 Três testes travam o **formato** dos objetos de agregação: se alguém acrescentar
 um campo que ninguém lê, o teste reclama em vez de deixar apodrecer.
 
 ### As fixtures são fictícias
 
-[`tests/fixtures/receipts.js`](tests/fixtures/receipts.js) não contém nenhum dado
+Nem [`tests/fixtures/receipts.js`](tests/fixtures/receipts.js) nem
+[`tests/fixtures/statements.js`](tests/fixtures/statements.js) contêm dado
 real. O que foi preservado é a **estrutura** — ordem das linhas, redação dos
 rótulos, onde o rodapé começa, agência e conta ora juntas ora separadas, o
 formato do identificador Pix. Nomes, documentos, contas e identificadores são
@@ -599,6 +736,9 @@ banco.
   navegador e não desenha sem layout real, então o que os testes garantem é que
   montam sem erro — não que desenham certo. Isso continua sendo verificação
   manual.
+- **A leitura de fatura cobre Nubank e Itaú.** Outro emissor precisa de um
+  objeto de configuração novo, calibrado num exemplo. Enquanto não existe, o app
+  diz que não reconheceu em vez de tentar adivinhar.
 - **O escritor de `.xlsx` também não.** É o ponto mais crítico do sistema e
   precisaria de uma planilha de exemplo para um teste de ponta a ponta que leia,
   preencha e confira célula a célula. Hoje a garantia vem do próprio escritor,
